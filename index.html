@@ -191,9 +191,9 @@
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
       
       <select id="font-family-select" title="글자체 선택">
+        <option value="'Gowun Batang', serif" selected>고운바탕 (시집 추천)</option>
         <option value="'Noto Sans KR', sans-serif">본고딕 (깔끔함)</option>
         <option value="'Noto Serif KR', serif">본명조 (단정함)</option>
-        <option value="'Gowun Batang', serif">고운바탕 (시집 추천)</option>
         <option value="'Gowun Dodum', sans-serif">고운돋움 (정갈함)</option>
         <option value="'Nanum Pen Script', cursive">나눔펜 (감성 손글씨)</option>
       </select>
@@ -218,30 +218,30 @@
 
 <script>
 (function () {
-  // 🌟 제공해주신 17권의 시집 목록을 모두 추가했습니다.
+  // 🌟 제목을 '해낭시 제X집'에서 '해낭 제X집'으로 모두 변경했습니다.
   var bookList = [
-    { title: "해낭시 제1집: 해바람", author: "해낭문학회", url: "./books/01.epub", cover: "./images/01.jpg" },
-    { title: "해낭시 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "./books/03.epub", cover: "./images/03.jpg" },
-    { title: "해낭시 제5집: 고추단 아기 쑤욱 나오니", author: "해낭문학회", url: "./books/05.epub", cover: "./images/05.jpg" },
-    { title: "해낭시 제6집: 역사는 후퇴가 없나니", author: "해낭문학회", url: "./books/06.epub", cover: "./images/06.jpg" },
-    { title: "해낭시 제13집: 달라진 것은 있어도 사라진 것은...", author: "해낭문학회", url: "./books/13.epub", cover: "./images/13.jpg" },
-    { title: "해낭시 제14집: 기쁨과 슬픔이 연대하고서", author: "해낭문학회", url: "./books/14.epub", cover: "./images/14.jpg" },
-    { title: "해낭시 제17집: 어허야라, 황사 바람 불어온다", author: "해낭문학회", url: "./books/17.epub", cover: "./images/17.jpg" },
-    { title: "해낭시 제22집: 아직은 가을을 말하는 것이 어떠랴", author: "해낭문학회", url: "./books/22.epub", cover: "./images/22.jpg" },
-    { title: "해낭시 제23집: 알몸으로 틔우는 푸르름", author: "해낭문학회", url: "./books/23.epub", cover: "./images/23.jpg" },
-    { title: "해낭시 제24집: 밤은 창문을 두드릴 뿐이다", author: "해낭문학회", url: "./books/24.epub", cover: "./images/24.jpg" },
-    { title: "해낭시 제25집: 깊은 물은 소리를 삼키우고", author: "해낭문학회", url: "./books/25.epub", cover: "./images/25.jpg" },
-    { title: "해낭시 제27집: 다시, 길 위에 신새벽의 시선들이", author: "해낭문학회", url: "./books/27.epub", cover: "./images/27.jpg" },
-    { title: "해낭시 제28집: 가을, 하늘의 파랑보다 더 진한", author: "해낭문학회", url: "./books/28.epub", cover: "./images/28.jpg" },
-    { title: "해낭시 제29집: 진원을 알 수 없는 삶의 울림", author: "해낭문학회", url: "./books/29.epub", cover: "./images/29.jpg" },
-    { title: "해낭시 제30집: 가을, 버릴 것 없이 가진 것 없이", author: "해낭문학회", url: "./books/30.epub", cover: "./images/30.jpg" },
-    { title: "해낭시 제31집: 삶은 기다림이 아니다", author: "해낭문학회", url: "./books/31.epub", cover: "./images/31.jpg" },
-    { title: "해낭시 제32집: 내림표 가득한 세상에서", author: "해낭문학회", url: "./books/32.epub", cover: "./images/32.jpg" }
+    { title: "해낭 제1집: 해바람", author: "해낭문학회", url: "./books/01.epub", cover: "./images/01.jpg" },
+    { title: "해낭 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "./books/03.epub", cover: "./images/03.jpg" },
+    { title: "해낭 제5집: 고추단 아기 쑤욱 나오니", author: "해낭문학회", url: "./books/05.epub", cover: "./images/05.jpg" },
+    { title: "해낭 제6집: 역사는 후퇴가 없나니", author: "해낭문학회", url: "./books/06.epub", cover: "./images/06.jpg" },
+    { title: "해낭 제13집: 달라진 것은 있어도 사라진 것은...", author: "해낭문학회", url: "./books/13.epub", cover: "./images/13.jpg" },
+    { title: "해낭 제14집: 기쁨과 슬픔이 연대하고서", author: "해낭문학회", url: "./books/14.epub", cover: "./images/14.jpg" },
+    { title: "해낭 제17집: 어허야라, 황사 바람 불어온다", author: "해낭문학회", url: "./books/17.epub", cover: "./images/17.jpg" },
+    { title: "해낭 제22집: 아직은 가을을 말하는 것이 어떠랴", author: "해낭문학회", url: "./books/22.epub", cover: "./images/22.jpg" },
+    { title: "해낭 제23집: 알몸으로 틔우는 푸르름", author: "해낭문학회", url: "./books/23.epub", cover: "./images/23.jpg" },
+    { title: "해낭 제24집: 밤은 창문을 두드릴 뿐이다", author: "해낭문학회", url: "./books/24.epub", cover: "./images/24.jpg" },
+    { title: "해낭 제25집: 깊은 물은 소리를 삼키우고", author: "해낭문학회", url: "./books/25.epub", cover: "./images/25.jpg" },
+    { title: "해낭 제27집: 다시, 길 위에 신새벽의 시선들이", author: "해낭문학회", url: "./books/27.epub", cover: "./images/27.jpg" },
+    { title: "해낭 제28집: 가을, 하늘의 파랑보다 더 진한", author: "해낭문학회", url: "./books/28.epub", cover: "./images/28.jpg" },
+    { title: "해낭 제29집: 진원을 알 수 없는 삶의 울림", author: "해낭문학회", url: "./books/29.epub", cover: "./images/29.jpg" },
+    { title: "해낭 제30집: 가을, 버릴 것 없이 가진 것 없이", author: "해낭문학회", url: "./books/30.epub", cover: "./images/30.jpg" },
+    { title: "해낭 제31집: 삶은 기다림이 아니다", author: "해낭문학회", url: "./books/31.epub", cover: "./images/31.jpg" },
+    { title: "해낭 제32집: 내림표 가득한 세상에서", author: "해낭문학회", url: "./books/32.epub", cover: "./images/32.jpg" }
   ];
 
   var book = null, rendition = null;
   var fontSize = 100;
-  var currentFont = "'Noto Sans KR', sans-serif"; 
+  var currentFont = "'Gowun Batang', serif"; 
   var currentSpread = "none";
   
   var shell = document.getElementById('reader-shell');
