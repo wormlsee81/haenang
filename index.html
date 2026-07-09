@@ -164,7 +164,7 @@
   #viewer-wrap { flex: 1; position: relative; overflow: hidden; background: #FFFFFF; }
   #viewer { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-  /* 🌟 투명 터치/스와이프 패널 (브라우저 간섭 완벽 차단) */
+  /* 투명 터치/스와이프 패널 */
   .touch-overlay {
     position: absolute;
     top: 0;
@@ -172,7 +172,7 @@
     width: 30%; /* 좌우 30% 영역 차지 */
     z-index: 20; /* 뷰어(iframe)보다 위에 위치 */
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent; /* 터치 시 번쩍임 방지 */
+    -webkit-tap-highlight-color: transparent;
   }
   #touch-overlay-left { left: 0; }
   #touch-overlay-right { right: 0; }
@@ -230,7 +230,7 @@
       <button id="back-to-library">◀ 서재</button>
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
       
-      <!-- 지정해주신 순서: 글자크기+, 음악켜기, 글자크기-, 단면/양면, 글꼴 선택 -->
+      <!-- 글자크기+, 음악켜기, 글자크기-, 단면/양면, 글꼴 선택 -->
       <button id="font-inc" title="글자 크게">가+</button>
       <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
       <button id="font-dec" title="글자 작게">가−</button>
@@ -248,7 +248,7 @@
     <div id="viewer-wrap">
       <div id="viewer"></div>
       
-      <!-- 🌟 실패 불가능한 무적의 투명 터치/스와이프 패널 -->
+      <!-- 실패 불가능한 무적의 투명 터치/스와이프 패널 -->
       <div id="touch-overlay-left" class="touch-overlay"></div>
       <div id="touch-overlay-right" class="touch-overlay"></div>
 
@@ -286,7 +286,8 @@
   ];
 
   var book = null, rendition = null;
-  var fontSize = 100;
+  // 🌟 기본 폰트 크기를 기존 100에서 120으로 2단계 확대
+  var fontSize = 120; 
   var currentFont = "'Gowun Batang', serif"; 
   var currentSpread = "none";
   
@@ -361,7 +362,7 @@
       spread: currentSpread 
     });
     
-    // 이 부분은 중앙 40% 영역에서 일어나는 스와이프를 위한 예비용 방어선입니다.
+    // 중앙 40% 영역(투명 패널이 없는 곳)에서 일어나는 스와이프를 위한 예비 방어선
     rendition.hooks.content.register(function(contents) {
       contents.addStylesheet("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500&family=Nanum+Pen+Script&display=swap");
       
@@ -385,6 +386,7 @@
       }, { passive: true });
     });
 
+    // 🌟 초기 글자 크기가 120%로 적용되도록 설정
     rendition.themes.fontSize(fontSize + "%");
     rendition.themes.font(currentFont);
 
@@ -454,7 +456,7 @@
     if(rendition) rendition.themes.fontSize(fontSize + "%");
   });
 
-  // 🌟 완벽한 투명 터치 패널 이벤트 (모바일 및 PC 완벽 대응)
+  // 완벽한 투명 터치 패널 이벤트 (모바일 및 PC 완벽 대응)
   var overlays = document.querySelectorAll('.touch-overlay');
   overlays.forEach(function(panel) {
     var startX = 0, startY = 0, startTime = 0;
