@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>나만의 온라인 서재</title>
+<title>숲을 위한 씨앗 해낭문학회</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -138,7 +138,7 @@
 
   <!-- 메인 서재 화면 -->
   <div id="library">
-    <h1>나만의 서재</h1>
+    <h1>숲을 위한 씨앗 해낭문학회</h1>
     <div class="bookshelf" id="bookshelf">
       <!-- 자바스크립트를 통해 이곳에 책 목록이 자동으로 생성됨 -->
     </div>
@@ -174,20 +174,38 @@
 
 <script>
 (function () {
-  // 📚 가지고 있는 30여 개의 책 정보를 이곳에 나열해 주면 돼!
-  // 파일 이름에 띄어쓰기가 있다면 있는 그대로 정확하게 적어줘야 해.
+  // 📚 사진에 제공된 6권의 시집 정보와 경로 반영 완료
   var bookList = [
     { 
       title: "해낭시 제1집: 해바람", 
       author: "해낭문학회", 
-      url: "./books/해낭시_제1집_해바람 (1).epub" 
+      url: "./books/01.epub" 
     },
     { 
       title: "해낭시 제3집: 분노는 그리 초조하지 않게", 
       author: "해낭문학회", 
-      url: "./books/해낭시_제3집_분노는_그리_초조하지_않게.epub" 
+      url: "./books/03.epub" 
+    },
+    { 
+      title: "해낭시 제6집: 역사는 후퇴가 없나니", 
+      author: "해낭문학회", 
+      url: "./books/06.epub" 
+    },
+    { 
+      title: "해낭시 제13집: 달라진 것은 있어도 사라진 것은...", 
+      author: "해낭문학회", 
+      url: "./books/13.epub" 
+    },
+    { 
+      title: "해낭시 제14집: 기쁨과 슬픔이 연대하고서", 
+      author: "해낭문학회", 
+      url: "./books/14.epub" 
+    },
+    { 
+      title: "해낭시 제17집: 어허야라 황사바람 불어온다", 
+      author: "해낭문학회", 
+      url: "./books/17.epub" 
     }
-    // ... 나머지 책들도 쉼표(,)로 구분해서 같은 형식으로 아래에 쭉 추가하면 돼!
   ];
 
   var book = null, rendition = null;
