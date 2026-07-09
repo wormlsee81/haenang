@@ -16,11 +16,11 @@
 
 <style>
   :root {
-    /* 🌟 프리미엄 갤러리 컬러 팔레트 */
-    --bg-color: #FBF9F6;          /* 따뜻하고 고급스러운 웜 아이보리 */
-    --text-primary: #2C2A28;      /* 눈이 편안한 다크 차콜 */
+    /* 프리미엄 갤러리 컬러 팔레트 */
+    --bg-color: #FBF9F6;
+    --text-primary: #2C2A28;
     --text-secondary: #8B8680;
-    --accent: #3A5A4C;            /* 차분하고 깊이 있는 포레스트 그린 */
+    --accent: #3A5A4C;
     --accent-hover: #264035;
     --border-color: #E8E3DB;
     --toolbar-bg: rgba(251, 249, 246, 0.92);
@@ -118,7 +118,7 @@
   }
   #reader-shell.visible { transform: translateY(0); }
 
-  /* 🌟 반응형 툴바 */
+  /* 반응형 툴바 */
   header.toolbar {
     display: flex; flex-wrap: nowrap; align-items: center;
     padding: 0.8rem 1.2rem; background: var(--toolbar-bg);
@@ -151,10 +151,7 @@
   #back-to-library { background: var(--accent); color: white; border: none; }
   #back-to-library:hover { background: var(--accent-hover); color: white; }
 
-  /* 음악 버튼 활성화 상태 */
-  #bgm-toggle.active {
-    background: var(--accent); color: white; border-color: var(--accent);
-  }
+  #bgm-toggle.active { background: var(--accent); color: white; border-color: var(--accent); }
 
   @media (max-width: 650px) {
     #library { padding: 3rem 1.2rem; }
@@ -169,7 +166,7 @@
   #viewer-wrap { flex: 1; position: relative; overflow: hidden; background: #FFFFFF; }
   #viewer { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-  /* 🌟 페이지 넘김 애니메이션 CSS */
+  /* 페이지 넘김 애니메이션 CSS */
   @keyframes turnNext {
     0% { transform: translateX(30px); opacity: 0; }
     100% { transform: translateX(0); opacity: 1; }
@@ -206,8 +203,7 @@
 </head>
 <body>
 
-  <!-- 🌟 배경 음악 파일 설정 (반복 재생) -->
-  <!-- 경로를 ./music/bgm.mp3 와 같이 설정했습니다. -->
+  <!-- 배경 음악 설정 -->
   <audio id="bgm" src="./music/bgm.mp3" loop></audio>
 
   <!-- 메인 서재 화면 -->
@@ -224,10 +220,8 @@
   <div id="reader-shell">
     <header class="toolbar">
       <button id="back-to-library">◀ 서재</button>
-      
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
       
-      <!-- 🌟 음악 컨트롤 버튼 -->
       <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
       
       <select id="font-family-select" title="글자체 선택">
@@ -289,7 +283,7 @@
   var progressSlider = document.getElementById('progress-slider');
   var viewerEl = document.getElementById('viewer');
 
-  // 🌟 음악 컨트롤 로직
+  // 음악 컨트롤 로직
   var bgm = document.getElementById('bgm');
   var bgmToggle = document.getElementById('bgm-toggle');
   var isPlaying = false;
@@ -324,10 +318,10 @@
     bookshelfEl.appendChild(card);
   });
 
-  // 페이지 애니메이션 트리거 함수
+  // 페이지 애니메이션 처리
   function animatePageTurn(direction) {
     viewerEl.classList.remove('turn-next-anim', 'turn-prev-anim');
-    void viewerEl.offsetWidth; // 리플로우 강제 발생
+    void viewerEl.offsetWidth; // 리플로우 강제 발생 (애니메이션 재시작)
     if (direction === 'next') {
       viewerEl.classList.add('turn-next-anim');
     } else {
@@ -359,21 +353,25 @@
       contents.addStylesheet("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500&family=Nanum+Pen+Script&display=swap");
       
       var el = contents.document.documentElement;
-      
-      // 데스크탑 클릭 애니메이션 연동
-      el.addEventListener('click', function(e) {
-        var target = e.target;
+
+      // 🌟 터치/클릭을 공통으로 처리하는 함수
+      function handlePageTurnTap(clientX, target) {
+        // 링크(a 태그) 클릭 시 페이지 넘김 방지
         while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
           if (target.tagName.toLowerCase() === 'a') return;
           target = target.parentNode;
         }
-        var clientX = e.clientX;
         var width = contents.window.innerWidth;
-        if (clientX < width * 0.25) { goPrev(); } 
+        if (clientX < width * 0.25) { goPrev(); }
         else if (clientX > width * 0.75) { goNext(); }
+      }
+      
+      // 데스크탑 환경 클릭 이벤트
+      el.addEventListener('click', function(e) {
+        handlePageTurnTap(e.clientX, e.target);
       });
 
-      // 모바일 좌우 탭 인식
+      // 🌟 모바일 환경 터치 이벤트 (오차 허용 범위 40px로 확대)
       var startX, startY;
       el.addEventListener('touchstart', function(e) {
         startX = e.changedTouches[0].screenX;
@@ -381,23 +379,15 @@
       }, { passive: true });
       
       el.addEventListener('touchend', function(e) {
-        var target = e.target;
-        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
-          if (target.tagName.toLowerCase() === 'a') return;
-          target = target.parentNode;
-        }
-
         var endX = e.changedTouches[0].screenX;
         var endY = e.changedTouches[0].screenY;
         
-        if (Math.abs(endX - startX) < 10 && Math.abs(endY - startY) < 10) {
-          var clientX = e.changedTouches[0].clientX;
-          var width = contents.window.innerWidth;
-
-          if (clientX < width * 0.25) { goPrev(); e.preventDefault(); } 
-          else if (clientX > width * 0.75) { goNext(); e.preventDefault(); }
+        // 터치 이동 거리가 40px 미만일 때만 '탭(가벼운 터치)'으로 인정 (스와이프와 명확히 구분)
+        if (Math.abs(endX - startX) < 40 && Math.abs(endY - startY) < 40) {
+          handlePageTurnTap(e.changedTouches[0].clientX, e.target);
+          if (e.cancelable) e.preventDefault(); // 중복 클릭 방지
         }
-      });
+      }, { passive: false });
     });
 
     rendition.themes.fontSize(fontSize + "%");
@@ -423,6 +413,7 @@
     });
   }
 
+  // 슬라이더 및 툴바 이벤트
   progressSlider.addEventListener('change', function(e) {
     var percentage = e.target.value / 100;
     if (book && book.locations.length() > 0) {
@@ -433,9 +424,6 @@
 
   document.getElementById('back-to-library').addEventListener('click', function () {
     shell.classList.remove('visible');
-    // 서재로 나갈 때 음악을 끄고 싶다면 아래 두 줄의 주석(//)을 지워주세요.
-    // bgm.pause(); 
-    // bgmToggle.textContent = '🎵 음악 켜기'; bgmToggle.classList.remove('active'); isPlaying = false;
   });
 
   document.getElementById('font-family-select').addEventListener('change', function(e) {
@@ -454,6 +442,7 @@
     if(rendition) rendition.spread(currentSpread);
   });
 
+  // 애니메이션이 연동된 넘김 함수
   function goPrev() { if(rendition) { rendition.prev(); animatePageTurn('prev'); } }
   function goNext() { if(rendition) { rendition.next(); animatePageTurn('next'); } }
 
@@ -466,6 +455,7 @@
     if (e.key === "ArrowRight") goNext();
   });
 
+  // 화면 여백(책 내용 바깥쪽) 모바일 스와이프 로직
   var touchStartX = null;
   var viewerWrap = document.getElementById('viewer-wrap');
   viewerWrap.addEventListener('touchstart', function (e) {
