@@ -162,9 +162,20 @@
   }
 
   #viewer-wrap { flex: 1; position: relative; overflow: hidden; background: #FFFFFF; }
-  
-  /* 모바일 브라우저의 기본 스와이프 기능(뒤로가기 등)을 완벽 차단 */
-  #viewer { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: pan-y; }
+  #viewer { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* 🌟 투명 터치/스와이프 패널 (브라우저 간섭 완벽 차단) */
+  .touch-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 30%; /* 좌우 30% 영역 차지 */
+    z-index: 20; /* 뷰어(iframe)보다 위에 위치 */
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent; /* 터치 시 번쩍임 방지 */
+  }
+  #touch-overlay-left { left: 0; }
+  #touch-overlay-right { right: 0; }
 
   @keyframes turnNext {
     0% { transform: translateX(30px); opacity: 0; }
@@ -219,7 +230,7 @@
       <button id="back-to-library">◀ 서재</button>
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
       
-      <!-- 요청하신 정확한 순서: 글자크기+, 음악켜기, 글자크기-, 단면/양면, 글꼴 선택 -->
+      <!-- 지정해주신 순서: 글자크기+, 음악켜기, 글자크기-, 단면/양면, 글꼴 선택 -->
       <button id="font-inc" title="글자 크게">가+</button>
       <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
       <button id="font-dec" title="글자 작게">가−</button>
@@ -236,6 +247,11 @@
 
     <div id="viewer-wrap">
       <div id="viewer"></div>
+      
+      <!-- 🌟 실패 불가능한 무적의 투명 터치/스와이프 패널 -->
+      <div id="touch-overlay-left" class="touch-overlay"></div>
+      <div id="touch-overlay-right" class="touch-overlay"></div>
+
       <div id="loading" hidden>책을 펼치는 중...</div>
     </div>
 
@@ -323,8 +339,8 @@
     }
   }
 
-  // 터치 위치 기록 변수
-  var touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+  function goPrev() { if(rendition) { rendition.prev(); animatePageTurn('prev'); } }
+  function goNext() { if(rendition) { rendition.next(); animatePageTurn('next'); } }
 
   function openBook(url, titleStr) {
     if(book) { book.destroy(); }
@@ -345,60 +361,28 @@
       spread: currentSpread 
     });
     
-    // 🌟 핵심 해결: ePub.js의 내장 글로벌 이벤트 리스너를 직접 호출
-    // 페이지가 넘어가도 이벤트 연결이 절대 끊어지지 않습니다.
-    rendition.on("touchstart", function(event) {
-      if (!event.changedTouches || event.changedTouches.length === 0) return;
-      touchStartX = event.changedTouches[0].screenX;
-      touchStartY = event.changedTouches[0].screenY;
-      touchStartTime = new Date().getTime();
-    });
-
-    rendition.on("touchend", function(event) {
-      if (!event.changedTouches || event.changedTouches.length === 0) return;
-      
-      var endX = event.changedTouches[0].screenX;
-      var endY = event.changedTouches[0].screenY;
-      var timeDiff = new Date().getTime() - touchStartTime;
-      
-      var diffX = endX - touchStartX;
-      var diffY = endY - touchStartY;
-
-      // 1. 밀기(스와이프) 인식: 40px 이상 이동 & 0.8초 이내
-      if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) && timeDiff < 800) {
-        if (diffX > 0) { goPrev(); } else { goNext(); }
-        return;
-      }
-
-      // 2. 가벼운 가장자리 터치(탭) 인식
-      if (Math.abs(diffX) < 15 && Math.abs(diffY) < 15 && timeDiff < 400) {
-        var clientX = event.changedTouches[0].clientX;
-        var width = event.view ? event.view.innerWidth : window.innerWidth;
-        if (clientX < width * 0.25) { goPrev(); } 
-        else if (clientX > width * 0.75) { goNext(); }
-      }
-    });
-
-    // 데스크탑 환경 마우스 클릭 인식
-    rendition.on("click", function(event) {
-      var target = event.target;
-      while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
-        if (target.tagName.toLowerCase() === 'a') return;
-        target = target.parentNode;
-      }
-      var clientX = event.clientX;
-      var width = event.view ? event.view.innerWidth : window.innerWidth;
-      if (clientX < width * 0.25) { goPrev(); }
-      else if (clientX > width * 0.75) { goNext(); }
-    });
-
-    // 화면 내부 스와이프 방지 CSS 주입
+    // 이 부분은 중앙 40% 영역에서 일어나는 스와이프를 위한 예비용 방어선입니다.
     rendition.hooks.content.register(function(contents) {
       contents.addStylesheet("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500&family=Nanum+Pen+Script&display=swap");
       
-      var style = contents.document.createElement("style");
-      style.innerHTML = "html, body { touch-action: pan-y !important; overscroll-behavior-x: none !important; user-select: none; -webkit-user-select: none; }";
-      contents.document.head.appendChild(style);
+      var doc = contents.document;
+      var startX = 0, startY = 0, startTime = 0;
+      
+      doc.addEventListener('touchstart', function(e){
+        startX = e.touches[0].screenX;
+        startY = e.touches[0].screenY;
+        startTime = Date.now();
+      }, { passive: true });
+      
+      doc.addEventListener('touchend', function(e){
+        if (e.changedTouches.length === 0) return;
+        var diffX = e.changedTouches[0].screenX - startX;
+        var diffY = e.changedTouches[0].screenY - startY;
+        var timeDiff = Date.now() - startTime;
+        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) && timeDiff < 800) {
+          diffX > 0 ? goPrev() : goNext();
+        }
+      }, { passive: true });
     });
 
     rendition.themes.fontSize(fontSize + "%");
@@ -452,9 +436,6 @@
     if(rendition) rendition.spread(currentSpread);
   });
 
-  function goPrev() { if(rendition) { rendition.prev(); animatePageTurn('prev'); } }
-  function goNext() { if(rendition) { rendition.next(); animatePageTurn('next'); } }
-
   document.getElementById('prev-btn').addEventListener('click', goPrev);
   document.getElementById('next-btn').addEventListener('click', goNext);
 
@@ -464,28 +445,6 @@
     if (e.key === "ArrowRight") goNext();
   });
 
-  // 액자(iframe) 바깥 여백 스와이프 기능
-  var outerTouchStartX = null;
-  var outerTouchStartY = null;
-  var viewerWrap = document.getElementById('viewer-wrap');
-  
-  viewerWrap.addEventListener('touchstart', function (e) {
-    outerTouchStartX = e.changedTouches[0].screenX;
-    outerTouchStartY = e.changedTouches[0].screenY;
-  }, { passive: true });
-  
-  viewerWrap.addEventListener('touchend', function (e) {
-    if (outerTouchStartX === null || !rendition) return;
-    var diffX = e.changedTouches[0].screenX - outerTouchStartX;
-    var diffY = e.changedTouches[0].screenY - outerTouchStartY;
-    
-    if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) { 
-      diffX > 0 ? goPrev() : goNext(); 
-    }
-    outerTouchStartX = null;
-    outerTouchStartY = null;
-  }, { passive: true });
-
   document.getElementById('font-inc').addEventListener('click', function () {
     fontSize = Math.min(180, fontSize + 10);
     if(rendition) rendition.themes.fontSize(fontSize + "%");
@@ -493,6 +452,41 @@
   document.getElementById('font-dec').addEventListener('click', function () {
     fontSize = Math.max(70, fontSize - 10);
     if(rendition) rendition.themes.fontSize(fontSize + "%");
+  });
+
+  // 🌟 완벽한 투명 터치 패널 이벤트 (모바일 및 PC 완벽 대응)
+  var overlays = document.querySelectorAll('.touch-overlay');
+  overlays.forEach(function(panel) {
+    var startX = 0, startY = 0, startTime = 0;
+
+    // 모바일 터치 및 스와이프 처리
+    panel.addEventListener('touchstart', function (e) {
+      startX = e.changedTouches[0].screenX;
+      startY = e.changedTouches[0].screenY;
+      startTime = Date.now();
+    }, { passive: true });
+    
+    panel.addEventListener('touchend', function (e) {
+      var diffX = e.changedTouches[0].screenX - startX;
+      var diffY = e.changedTouches[0].screenY - startY;
+      var timeDiff = Date.now() - startTime;
+      
+      // 스와이프 (밀기)
+      if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) && timeDiff < 800) {
+        diffX > 0 ? goPrev() : goNext();
+        if(e.cancelable) e.preventDefault();
+      } 
+      // 탭 (가장자리 톡 치기)
+      else if (Math.abs(diffX) < 15 && Math.abs(diffY) < 15 && timeDiff < 400) {
+        panel.id === 'touch-overlay-left' ? goPrev() : goNext();
+        if(e.cancelable) e.preventDefault();
+      }
+    }, { passive: false });
+
+    // PC 환경 마우스 클릭 처리
+    panel.addEventListener('click', function(e) {
+      panel.id === 'touch-overlay-left' ? goPrev() : goNext();
+    });
   });
 
   window.addEventListener('resize', function () {
