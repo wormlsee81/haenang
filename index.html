@@ -200,7 +200,6 @@
 </head>
 <body>
 
-  <!-- 🌟 더 정확한 상대 경로로 수정한 오디오 설정 -->
   <audio id="bgm" src="music/bgm.mp3" loop></audio>
 
   <div id="library">
@@ -344,7 +343,20 @@
       
       var el = contents.document.documentElement;
 
-      // 🌟 완벽하게 개선된 탭(Tap) 인식 로직
+      // 데스크탑 클릭 인식 (기존 유지)
+      el.addEventListener('click', function(e) {
+        var target = e.target;
+        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
+          if (target.tagName.toLowerCase() === 'a') return;
+          target = target.parentNode;
+        }
+        var clientX = e.clientX;
+        var width = contents.window.innerWidth;
+        if (clientX < width * 0.25) { goPrev(); }
+        else if (clientX > width * 0.75) { goNext(); }
+      });
+
+      // 🌟 모바일 완벽 스와이프(밀기) 로직
       var startX, startY, startTime;
       
       el.addEventListener('touchstart', function(e) {
@@ -358,38 +370,19 @@
         var endY = e.changedTouches[0].screenY;
         var endTime = new Date().getTime();
         
-        // 링크 클릭 방지 로직
-        var target = e.target;
-        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
-          if (target.tagName.toLowerCase() === 'a') return;
-          target = target.parentNode;
-        }
+        var diffX = endX - startX;
+        var diffY = endY - startY;
+        var timeDiff = endTime - startTime;
 
-        // 터치 이동 거리가 30px 이하이고, 터치 지속 시간이 0.3초(300ms) 이하일 때만 탭으로 인정!
-        if (Math.abs(endX - startX) < 30 && Math.abs(endY - startY) < 30 && (endTime - startTime) < 300) {
-          var clientX = e.changedTouches[0].clientX;
-          var width = contents.window.innerWidth;
-
-          if (clientX < width * 0.25) { 
-            goPrev(); e.preventDefault(); 
-          } else if (clientX > width * 0.75) { 
-            goNext(); e.preventDefault(); 
+        // X축(좌우)으로 50px 이상 이동했고, Y축(상하)보다 X축 이동이 더 크며, 0.8초 이내로 스와이프 했을 때 작동
+        if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) && timeDiff < 800) {
+          if (diffX > 0) {
+            goPrev(); // 오른쪽으로 밀면 이전 페이지
+          } else {
+            goNext(); // 왼쪽으로 밀면 다음 페이지
           }
         }
-      }, { passive: false });
-
-      // 데스크탑 마우스 클릭 이벤트
-      el.addEventListener('click', function(e) {
-        var target = e.target;
-        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
-          if (target.tagName.toLowerCase() === 'a') return;
-          target = target.parentNode;
-        }
-        var clientX = e.clientX;
-        var width = contents.window.innerWidth;
-        if (clientX < width * 0.25) { goPrev(); }
-        else if (clientX > width * 0.75) { goNext(); }
-      });
+      }, { passive: true });
     });
 
     rendition.themes.fontSize(fontSize + "%");
@@ -454,6 +447,29 @@
     if (e.key === "ArrowLeft") goPrev();
     if (e.key === "ArrowRight") goNext();
   });
+
+  // 바깥 여백 스와이프 기능 (뷰어 외부도 동일하게 스와이프 지원)
+  var touchStartX = null;
+  var touchStartY = null;
+  var viewerWrap = document.getElementById('viewer-wrap');
+  
+  viewerWrap.addEventListener('touchstart', function (e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+  
+  viewerWrap.addEventListener('touchend', function (e) {
+    if (touchStartX === null || !rendition) return;
+    var diffX = e.changedTouches[0].screenX - touchStartX;
+    var diffY = e.changedTouches[0].screenY - touchStartY;
+    
+    // 외부 스와이프 역시 좌우 구분이 확실할 때만 작동
+    if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) { 
+      diffX > 0 ? goPrev() : goNext(); 
+    }
+    touchStartX = null;
+    touchStartY = null;
+  }, { passive: true });
 
   document.getElementById('font-inc').addEventListener('click', function () {
     fontSize = Math.min(180, fontSize + 10);
