@@ -15,137 +15,176 @@
 
 <style>
   :root {
-    --paper: #F8F9FA;
-    --ink: #2B2622;
-    --accent: #3E6B5C;
-    --rule: #E9ECEF;
+    /* 모던하고 우아한 컬러 팔레트 */
+    --bg-color: #FDFCF9;          /* 눈이 편안한 아주 밝은 아이보리/화이트 */
+    --text-primary: #2C2C2C;      /* 완전 블랙이 아닌 부드러운 먹색 */
+    --text-secondary: #757575;
+    --accent: #2B5B49;            /* 숲을 연상케 하는 딥 포레스트 그린 */
+    --accent-hover: #1E4033;
+    --border-color: #EAE6DF;
+    --toolbar-bg: rgba(253, 252, 249, 0.95); /* 살짝 투명한 툴바 배경 */
   }
 
   * { box-sizing: border-box; }
 
   html, body {
     margin: 0; padding: 0; height: 100%;
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--bg-color);
+    color: var(--text-primary);
     font-family: 'Gowun Dodum', sans-serif;
+    -webkit-font-smoothing: antialiased; /* 폰트를 더 또렷하게 */
   }
 
-  button, select { font-family: inherit; }
+  button, select { font-family: inherit; outline: none; }
 
   /* ---------- 서재 (책장) UI ---------- */
   #library {
-    padding: 3rem 1.5rem;
+    padding: 4rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
   }
   
   #library h1 {
     font-family: 'Gowun Batang', serif;
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid var(--ink);
-    padding-bottom: 1rem;
+    font-size: 2.2rem;
+    margin-bottom: 3rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+    letter-spacing: -0.03em;
   }
 
   .bookshelf {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 2rem 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 3.5rem 2rem;
   }
 
   .book-card {
     cursor: pointer;
     text-align: left;
-    transition: transform 0.2s ease;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
   .book-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
   }
 
+  /* 🌟 실제 책과 같은 제본선(Spine) 및 그림자 효과 */
   .book-cover {
     width: 100%;
     aspect-ratio: 2 / 3;
     object-fit: cover;
-    box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
-    margin-bottom: 0.8rem;
-    background-color: #ddd;
-    border-radius: 2px;
+    border-radius: 2px 6px 6px 2px; /* 오른쪽 모서리만 더 둥글게 */
+    box-shadow: 
+      inset 4px 0 10px rgba(0,0,0,0.1), /* 왼쪽 제본선 굴곡 */
+      inset -1px 0 2px rgba(255,255,255,0.3), /* 오른쪽 은은한 빛 */
+      4px 8px 16px rgba(0,0,0,0.08); /* 바닥 그림자 */
+    margin-bottom: 1rem;
+    background-color: #E8E8E8;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .book-card:hover .book-cover {
+    box-shadow: 
+      inset 4px 0 10px rgba(0,0,0,0.1),
+      inset -1px 0 2px rgba(255,255,255,0.3),
+      6px 12px 20px rgba(0,0,0,0.12); /* 마우스 올렸을 때 그림자 깊어짐 */
   }
 
   .book-title {
     font-weight: 700;
-    font-size: 0.95rem;
-    margin: 0 0 0.3rem 0;
-    line-height: 1.3;
+    font-size: 1rem;
+    margin: 0 0 0.4rem 0;
+    line-height: 1.4;
     word-break: keep-all;
+    color: var(--text-primary);
   }
 
   .book-author {
-    font-size: 0.8rem;
-    color: #666;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
     margin: 0;
   }
 
   /* ---------- Reader shell (책 읽기 화면) ---------- */
   #reader-shell {
     position: fixed; inset: 0; display: flex; flex-direction: column;
-    background: #EDE7D9;
+    background: var(--bg-color);
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     z-index: 100;
   }
   #reader-shell.visible { transform: translateY(0); }
 
-  /* 🌟 스마트폰 대응 반응형 툴바 CSS */
+  /* 🌟 모던한 앱 스타일 반응형 툴바 */
   header.toolbar {
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-    padding: 0.6rem 0.9rem; border-bottom: 1px solid #CBBFA0; gap: 0.5rem;
+    padding: 0.8rem 1.2rem; 
+    background: var(--toolbar-bg);
+    backdrop-filter: blur(8px); /* 뒤가 살짝 비치는 고급 블러 효과 */
+    border-bottom: 1px solid var(--border-color); 
+    gap: 0.8rem;
+    z-index: 10;
   }
   .toolbar-group {
-    display: flex; gap: 0.35rem; align-items: center;
+    display: flex; gap: 0.5rem; align-items: center;
   }
   .shell-book-title {
-    font-family: 'Gowun Batang', serif; font-size: 0.95rem; font-weight: bold;
+    font-family: 'Gowun Batang', serif; font-size: 1rem; font-weight: bold;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: center;
-    min-width: 100px;
+    min-width: 100px; color: var(--text-primary);
   }
   
+  /* 알약(Pill) 형태의 세련된 버튼 디자인 */
   .toolbar button, .toolbar select, footer.statusbar button {
-    background: none; border: 1px solid #CBBFA0; color: var(--ink);
-    border-radius: 2px; padding: 0.35rem 0.5rem; font-size: 0.75rem; cursor: pointer;
+    background: #FFFFFF; border: 1px solid var(--border-color); color: var(--text-primary);
+    border-radius: 20px; padding: 0.45rem 1rem; font-size: 0.85rem; cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
   }
-  .toolbar select { max-width: 120px; text-overflow: ellipsis; }
   
-  #back-to-library { font-weight: bold; color: var(--accent); border-color: var(--accent); }
+  .toolbar button:hover, .toolbar select:hover, footer.statusbar button:hover {
+    border-color: var(--accent); color: var(--accent); background: #F4F8F6;
+  }
+  
+  .toolbar select { max-width: 140px; text-overflow: ellipsis; padding-right: 0.5rem; }
+  
+  /* 메인 액션 버튼(서재로 돌아가기) 컬러 반전 */
+  #back-to-library { background: var(--accent); color: white; border: none; font-weight: bold; }
+  #back-to-library:hover { background: var(--accent-hover); color: white; }
 
-  /* 화면 폭이 좁은 모바일 기기일 때 레이아웃 세로 정렬 */
   @media (max-width: 650px) {
-    header.toolbar { flex-direction: column; align-items: stretch; padding: 0.5rem; }
-    .shell-book-title { order: -1; margin-bottom: 0.4rem; font-size: 0.9rem; }
+    header.toolbar { flex-direction: column; align-items: stretch; padding: 0.8rem; }
+    .shell-book-title { order: -1; margin-bottom: 0.5rem; font-size: 0.95rem; }
     .toolbar-group { justify-content: space-between; width: 100%; }
     .toolbar-group.right { justify-content: flex-end; flex-wrap: wrap; }
+    .toolbar button, .toolbar select { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
   }
 
-  #viewer-wrap { flex: 1; position: relative; overflow: hidden; }
+  #viewer-wrap { flex: 1; position: relative; overflow: hidden; background: #FFFFFF; }
   #viewer { position: absolute; inset: 0; }
-
-  .nav-zone { position: absolute; top: 0; bottom: 0; width: 14%; cursor: pointer; z-index: 2; }
-  .nav-zone.left { left: 0; } .nav-zone.right { right: 0; }
 
   #loading {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; opacity: .8; font-weight: bold; z-index: 5;
+    font-size: 1.1rem; opacity: .8; font-weight: bold; color: var(--accent); z-index: 5;
+    background: rgba(255,255,255,0.8);
   }
   #loading[hidden] { display: none !important; }
 
+  /* 하단 바 및 커스텀 슬라이더 CSS */
   footer.statusbar {
-    padding: .5rem .9rem; border-top: 1px solid #CBBFA0;
-    display: flex; align-items: center; gap: .75rem; font-size: .75rem;
+    padding: 0.8rem 1.2rem; background: var(--toolbar-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex; align-items: center; gap: 1rem; font-size: 0.85rem;
   }
-  .progress-track { flex: 1; height: 3px; background: #CBBFA0; border-radius: 2px; }
-  .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width .3s ease; }
-  #progress-label { min-width: 4ch; text-align: right; opacity: .7; }
+  
+  #progress-slider {
+    flex: 1; cursor: pointer; accent-color: var(--accent);
+    height: 4px; border-radius: 2px;
+  }
+  
+  #progress-label { min-width: 4ch; text-align: right; color: var(--text-secondary); font-weight: bold; }
 
 </style>
 </head>
@@ -155,7 +194,6 @@
   <div id="library">
     <h1>숲을 위한 씨앗 해낭문학회</h1>
     <div class="bookshelf" id="bookshelf">
-      <!-- 자바스크립트로 자동 생성 -->
     </div>
   </div>
 
@@ -169,7 +207,6 @@
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
       
       <div class="toolbar-group right">
-        <!-- 기기 설치 폰트 선택 메뉴 -->
         <select id="font-family-select" title="글자체 선택">
           <option value="sans-serif">기본 고딕 (모바일/PC)</option>
           <option value="serif">기본 명조 (모바일/PC)</option>
@@ -179,7 +216,6 @@
           <option value="'Dotum', sans-serif">돋움체 (윈도우)</option>
         </select>
         
-        <!-- 단면/양면 전환 버튼 -->
         <button id="spread-toggle" title="페이지 보기 방식 전환">📖 양면</button>
         <button id="font-dec" title="글자 작게">가−</button>
         <button id="font-inc" title="글자 크게">가+</button>
@@ -189,13 +225,12 @@
     <div id="viewer-wrap">
       <div id="viewer"></div>
       <div id="loading" hidden>책을 펼치는 중...</div>
-      <div class="nav-zone left" id="zone-prev"></div>
-      <div class="nav-zone right" id="zone-next"></div>
     </div>
 
     <footer class="statusbar">
       <button id="prev-btn">◀ 이전</button>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <!-- 인터랙티브 슬라이더 -->
+      <input type="range" id="progress-slider" min="0" max="100" value="0" step="1" title="위치를 드래그하여 이동하세요" disabled>
       <span id="progress-label">0%</span>
       <button id="next-btn">다음 ▶</button>
     </footer>
@@ -214,14 +249,15 @@
 
   var book = null, rendition = null;
   var fontSize = 100;
-  var currentFont = "sans-serif"; // 초기 폰트
-  var currentSpread = "none";     // 초기 단면 모드 ("none" = 1페이지, "auto" = 2페이지)
+  var currentFont = "sans-serif";
+  var currentSpread = "none";
   
   var shell = document.getElementById('reader-shell');
   var loadingEl = document.getElementById('loading');
   var bookshelfEl = document.getElementById('bookshelf');
+  var progressSlider = document.getElementById('progress-slider');
 
-  // 1. 책장 UI 생성 및 표지 자동 추출
+  // 책장 UI 생성
   bookList.forEach(function(item, index) {
     var card = document.createElement('div');
     card.className = 'book-card';
@@ -247,11 +283,12 @@
     });
   });
 
-  // 2. 책 뷰어 렌더링 함수
+  // 책 뷰어 렌더링 함수
   function openBook(url, titleStr) {
     if(book) { book.destroy(); }
     document.getElementById('viewer').innerHTML = '';
-    document.getElementById('progress-fill').style.width = '0%';
+    progressSlider.value = 0;
+    progressSlider.disabled = true; // 책 길이를 계산할 때까지 슬라이더 잠금
     document.getElementById('progress-label').textContent = '0%';
     document.getElementById('shell-title').textContent = titleStr;
     
@@ -260,69 +297,92 @@
 
     book = ePub(url);
     
-    // 렌더링 시 현재 설정된 단면/양면(spread) 적용
     rendition = book.renderTo("viewer", { 
       width: "100%", 
       height: "100%", 
       spread: currentSpread 
     });
     
-    // 렌더링 시 현재 설정된 폰트 크기 및 글자체 적용
     rendition.themes.fontSize(fontSize + "%");
     rendition.themes.font(currentFont);
+
+    // 스마트폰 좌우 터치 이동 (링크 보호 로직 포함)
+    rendition.hooks.content.register(function(contents) {
+      var el = contents.document.documentElement;
+      el.addEventListener('click', function(e) {
+        var target = e.target;
+        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
+          if (target.tagName.toLowerCase() === 'a') return;
+          target = target.parentNode;
+        }
+
+        var clientX = e.clientX;
+        var width = contents.window.innerWidth;
+
+        if (clientX < width * 0.25) {
+          rendition.prev();
+        } else if (clientX > width * 0.75) {
+          rendition.next();
+        }
+      });
+    });
+
+    // 책 전체 분량 계산 (슬라이더 이동을 위함)
+    book.ready.then(function() {
+      return book.locations.generate(1600);
+    }).then(function(locations) {
+      progressSlider.disabled = false;
+    });
 
     rendition.display().then(function () {
       loadingEl.hidden = true;
     }).catch(function(err) {
-      alert("책을 불러오는데 실패했습니다. 파일 경로를 확인해주세요.");
+      alert("책을 불러오는데 실패했습니다.");
       loadingEl.hidden = true;
     });
 
     rendition.on("relocated", function (location) {
       var pct = Math.round(((location.start && location.start.percentage) || 0) * 100);
-      document.getElementById('progress-fill').style.width = pct + "%";
+      progressSlider.value = pct;
       document.getElementById('progress-label').textContent = pct + "%";
     });
   }
 
+  // ============== 슬라이더 컨트롤 이벤트 ==============
+  progressSlider.addEventListener('change', function(e) {
+    var percentage = e.target.value / 100;
+    if (book && book.locations.length() > 0) {
+      var cfi = book.locations.cfiFromPercentage(percentage);
+      rendition.display(cfi);
+    }
+  });
+
   // ============== 뷰어 툴바 버튼 이벤트 ==============
-  
-  // 뒤로 가기
   document.getElementById('back-to-library').addEventListener('click', function () {
     shell.classList.remove('visible');
   });
 
-  // 폰트 변경 이벤트
   document.getElementById('font-family-select').addEventListener('change', function(e) {
     currentFont = e.target.value;
-    if(rendition) {
-      rendition.themes.font(currentFont);
-    }
+    if(rendition) rendition.themes.font(currentFont);
   });
 
-  // 단면/양면 전환 이벤트
   document.getElementById('spread-toggle').addEventListener('click', function() {
     if (currentSpread === "none") {
       currentSpread = "auto";
-      this.textContent = "📄 단면"; // 양면일 때 누르면 단면으로 돌아가도록 텍스트 변경
+      this.textContent = "📄 단면";
     } else {
       currentSpread = "none";
       this.textContent = "📖 양면";
     }
-    
-    if(rendition) {
-      rendition.spread(currentSpread);
-    }
+    if(rendition) rendition.spread(currentSpread);
   });
 
-  // 페이지 이동
   function goPrev() { if(rendition) rendition.prev(); }
   function goNext() { if(rendition) rendition.next(); }
 
   document.getElementById('prev-btn').addEventListener('click', goPrev);
   document.getElementById('next-btn').addEventListener('click', goNext);
-  document.getElementById('zone-prev').addEventListener('click', goPrev);
-  document.getElementById('zone-next').addEventListener('click', goNext);
 
   document.addEventListener('keydown', function (e) {
     if (!shell.classList.contains('visible')) return;
@@ -342,7 +402,6 @@
     touchStartX = null;
   }, { passive: true });
 
-  // 글자 크기
   document.getElementById('font-inc').addEventListener('click', function () {
     fontSize = Math.min(180, fontSize + 10);
     if(rendition) rendition.themes.fontSize(fontSize + "%");
@@ -352,7 +411,6 @@
     if(rendition) rendition.themes.fontSize(fontSize + "%");
   });
 
-  // 화면 리사이즈
   window.addEventListener('resize', function () {
     if (shell.classList.contains('visible') && rendition) rendition.resize();
   });
