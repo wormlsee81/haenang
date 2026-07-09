@@ -16,7 +16,6 @@
 
 <style>
   :root {
-    /* 프리미엄 갤러리 컬러 팔레트 */
     --bg-color: #FBF9F6;
     --text-primary: #2C2A28;
     --text-secondary: #8B8680;
@@ -118,7 +117,6 @@
   }
   #reader-shell.visible { transform: translateY(0); }
 
-  /* 반응형 툴바 */
   header.toolbar {
     display: flex; flex-wrap: nowrap; align-items: center;
     padding: 0.8rem 1.2rem; background: var(--toolbar-bg);
@@ -166,7 +164,6 @@
   #viewer-wrap { flex: 1; position: relative; overflow: hidden; background: #FFFFFF; }
   #viewer { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-  /* 페이지 넘김 애니메이션 CSS */
   @keyframes turnNext {
     0% { transform: translateX(30px); opacity: 0; }
     100% { transform: translateX(0); opacity: 1; }
@@ -203,10 +200,9 @@
 </head>
 <body>
 
-  <!-- 배경 음악 설정 -->
-  <audio id="bgm" src="./music/bgm.mp3" loop></audio>
+  <!-- 🌟 더 정확한 상대 경로로 수정한 오디오 설정 -->
+  <audio id="bgm" src="music/bgm.mp3" loop></audio>
 
-  <!-- 메인 서재 화면 -->
   <div id="library">
     <div id="library-header">
       <p class="subtitle">조용한 숲속에서 만나는 시의 향연</p>
@@ -216,12 +212,10 @@
     </div>
   </div>
 
-  <!-- 책 읽기 뷰어 화면 -->
   <div id="reader-shell">
     <header class="toolbar">
       <button id="back-to-library">◀ 서재</button>
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
-      
       <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
       
       <select id="font-family-select" title="글자체 선택">
@@ -253,23 +247,23 @@
 <script>
 (function () {
   var bookList = [
-    { title: "해낭 제1집: 해바람", author: "해낭문학회", url: "./books/01.epub", cover: "./images/01.jpg" },
-    { title: "해낭 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "./books/03.epub", cover: "./images/03.jpg" },
-    { title: "해낭 제5집: 고추단 아기 쑤욱 나오니", author: "해낭문학회", url: "./books/05.epub", cover: "./images/05.jpg" },
-    { title: "해낭 제6집: 역사는 후퇴가 없나니", author: "해낭문학회", url: "./books/06.epub", cover: "./images/06.jpg" },
-    { title: "해낭 제13집: 달라진 것은 있어도 사라진 것은...", author: "해낭문학회", url: "./books/13.epub", cover: "./images/13.jpg" },
-    { title: "해낭 제14집: 기쁨과 슬픔이 연대하고서", author: "해낭문학회", url: "./books/14.epub", cover: "./images/14.jpg" },
-    { title: "해낭 제17집: 어허야라, 황사 바람 불어온다", author: "해낭문학회", url: "./books/17.epub", cover: "./images/17.jpg" },
-    { title: "해낭 제22집: 아직은 가을을 말하는 것이 어떠랴", author: "해낭문학회", url: "./books/22.epub", cover: "./images/22.jpg" },
-    { title: "해낭 제23집: 알몸으로 틔우는 푸르름", author: "해낭문학회", url: "./books/23.epub", cover: "./images/23.jpg" },
-    { title: "해낭 제24집: 밤은 창문을 두드릴 뿐이다", author: "해낭문학회", url: "./books/24.epub", cover: "./images/24.jpg" },
-    { title: "해낭 제25집: 깊은 물은 소리를 삼키우고", author: "해낭문학회", url: "./books/25.epub", cover: "./images/25.jpg" },
-    { title: "해낭 제27집: 다시, 길 위에 신새벽의 시선들이", author: "해낭문학회", url: "./books/27.epub", cover: "./images/27.jpg" },
-    { title: "해낭 제28집: 가을, 하늘의 파랑보다 더 진한", author: "해낭문학회", url: "./books/28.epub", cover: "./images/28.jpg" },
-    { title: "해낭 제29집: 진원을 알 수 없는 삶의 울림", author: "해낭문학회", url: "./books/29.epub", cover: "./images/29.jpg" },
-    { title: "해낭 제30집: 가을, 버릴 것 없이 가진 것 없이", author: "해낭문학회", url: "./books/30.epub", cover: "./images/30.jpg" },
-    { title: "해낭 제31집: 삶은 기다림이 아니다", author: "해낭문학회", url: "./books/31.epub", cover: "./images/31.jpg" },
-    { title: "해낭 제32집: 내림표 가득한 세상에서", author: "해낭문학회", url: "./books/32.epub", cover: "./images/32.jpg" }
+    { title: "해낭 제1집: 해바람", author: "해낭문학회", url: "books/01.epub", cover: "images/01.jpg" },
+    { title: "해낭 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "books/03.epub", cover: "images/03.jpg" },
+    { title: "해낭 제5집: 고추단 아기 쑤욱 나오니", author: "해낭문학회", url: "books/05.epub", cover: "images/05.jpg" },
+    { title: "해낭 제6집: 역사는 후퇴가 없나니", author: "해낭문학회", url: "books/06.epub", cover: "images/06.jpg" },
+    { title: "해낭 제13집: 달라진 것은 있어도 사라진 것은...", author: "해낭문학회", url: "books/13.epub", cover: "images/13.jpg" },
+    { title: "해낭 제14집: 기쁨과 슬픔이 연대하고서", author: "해낭문학회", url: "books/14.epub", cover: "images/14.jpg" },
+    { title: "해낭 제17집: 어허야라, 황사 바람 불어온다", author: "해낭문학회", url: "books/17.epub", cover: "images/17.jpg" },
+    { title: "해낭 제22집: 아직은 가을을 말하는 것이 어떠랴", author: "해낭문학회", url: "books/22.epub", cover: "images/22.jpg" },
+    { title: "해낭 제23집: 알몸으로 틔우는 푸르름", author: "해낭문학회", url: "books/23.epub", cover: "images/23.jpg" },
+    { title: "해낭 제24집: 밤은 창문을 두드릴 뿐이다", author: "해낭문학회", url: "books/24.epub", cover: "images/24.jpg" },
+    { title: "해낭 제25집: 깊은 물은 소리를 삼키우고", author: "해낭문학회", url: "books/25.epub", cover: "images/25.jpg" },
+    { title: "해낭 제27집: 다시, 길 위에 신새벽의 시선들이", author: "해낭문학회", url: "books/27.epub", cover: "images/27.jpg" },
+    { title: "해낭 제28집: 가을, 하늘의 파랑보다 더 진한", author: "해낭문학회", url: "books/28.epub", cover: "images/28.jpg" },
+    { title: "해낭 제29집: 진원을 알 수 없는 삶의 울림", author: "해낭문학회", url: "books/29.epub", cover: "images/29.jpg" },
+    { title: "해낭 제30집: 가을, 버릴 것 없이 가진 것 없이", author: "해낭문학회", url: "books/30.epub", cover: "images/30.jpg" },
+    { title: "해낭 제31집: 삶은 기다림이 아니다", author: "해낭문학회", url: "books/31.epub", cover: "images/31.jpg" },
+    { title: "해낭 제32집: 내림표 가득한 세상에서", author: "해낭문학회", url: "books/32.epub", cover: "images/32.jpg" }
   ];
 
   var book = null, rendition = null;
@@ -283,7 +277,6 @@
   var progressSlider = document.getElementById('progress-slider');
   var viewerEl = document.getElementById('viewer');
 
-  // 음악 컨트롤 로직
   var bgm = document.getElementById('bgm');
   var bgmToggle = document.getElementById('bgm-toggle');
   var isPlaying = false;
@@ -295,7 +288,7 @@
       bgmToggle.classList.remove('active');
     } else {
       bgm.play().catch(function(e) { 
-        alert("음악 파일을 찾을 수 없습니다. ./music/bgm.mp3 파일이 있는지 확인해주세요."); 
+        alert("음악 파일을 재생할 수 없습니다. 파일(music/bgm.mp3)이 있는지 확인해주세요."); 
       });
       bgmToggle.textContent = '🔇 음악 끄기';
       bgmToggle.classList.add('active');
@@ -303,7 +296,6 @@
     isPlaying = !isPlaying;
   });
 
-  // 책장 UI 생성
   bookList.forEach(function(item) {
     var card = document.createElement('div');
     card.className = 'book-card';
@@ -318,10 +310,9 @@
     bookshelfEl.appendChild(card);
   });
 
-  // 페이지 애니메이션 처리
   function animatePageTurn(direction) {
     viewerEl.classList.remove('turn-next-anim', 'turn-prev-anim');
-    void viewerEl.offsetWidth; // 리플로우 강제 발생 (애니메이션 재시작)
+    void viewerEl.offsetWidth; 
     if (direction === 'next') {
       viewerEl.classList.add('turn-next-anim');
     } else {
@@ -329,7 +320,6 @@
     }
   }
 
-  // 책 뷰어 렌더링 함수
   function openBook(url, titleStr) {
     if(book) { book.destroy(); }
     viewerEl.innerHTML = '';
@@ -354,40 +344,52 @@
       
       var el = contents.document.documentElement;
 
-      // 🌟 터치/클릭을 공통으로 처리하는 함수
-      function handlePageTurnTap(clientX, target) {
-        // 링크(a 태그) 클릭 시 페이지 넘김 방지
-        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
-          if (target.tagName.toLowerCase() === 'a') return;
-          target = target.parentNode;
-        }
-        var width = contents.window.innerWidth;
-        if (clientX < width * 0.25) { goPrev(); }
-        else if (clientX > width * 0.75) { goNext(); }
-      }
+      // 🌟 완벽하게 개선된 탭(Tap) 인식 로직
+      var startX, startY, startTime;
       
-      // 데스크탑 환경 클릭 이벤트
-      el.addEventListener('click', function(e) {
-        handlePageTurnTap(e.clientX, e.target);
-      });
-
-      // 🌟 모바일 환경 터치 이벤트 (오차 허용 범위 40px로 확대)
-      var startX, startY;
       el.addEventListener('touchstart', function(e) {
         startX = e.changedTouches[0].screenX;
         startY = e.changedTouches[0].screenY;
+        startTime = new Date().getTime();
       }, { passive: true });
       
       el.addEventListener('touchend', function(e) {
         var endX = e.changedTouches[0].screenX;
         var endY = e.changedTouches[0].screenY;
+        var endTime = new Date().getTime();
         
-        // 터치 이동 거리가 40px 미만일 때만 '탭(가벼운 터치)'으로 인정 (스와이프와 명확히 구분)
-        if (Math.abs(endX - startX) < 40 && Math.abs(endY - startY) < 40) {
-          handlePageTurnTap(e.changedTouches[0].clientX, e.target);
-          if (e.cancelable) e.preventDefault(); // 중복 클릭 방지
+        // 링크 클릭 방지 로직
+        var target = e.target;
+        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
+          if (target.tagName.toLowerCase() === 'a') return;
+          target = target.parentNode;
+        }
+
+        // 터치 이동 거리가 30px 이하이고, 터치 지속 시간이 0.3초(300ms) 이하일 때만 탭으로 인정!
+        if (Math.abs(endX - startX) < 30 && Math.abs(endY - startY) < 30 && (endTime - startTime) < 300) {
+          var clientX = e.changedTouches[0].clientX;
+          var width = contents.window.innerWidth;
+
+          if (clientX < width * 0.25) { 
+            goPrev(); e.preventDefault(); 
+          } else if (clientX > width * 0.75) { 
+            goNext(); e.preventDefault(); 
+          }
         }
       }, { passive: false });
+
+      // 데스크탑 마우스 클릭 이벤트
+      el.addEventListener('click', function(e) {
+        var target = e.target;
+        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
+          if (target.tagName.toLowerCase() === 'a') return;
+          target = target.parentNode;
+        }
+        var clientX = e.clientX;
+        var width = contents.window.innerWidth;
+        if (clientX < width * 0.25) { goPrev(); }
+        else if (clientX > width * 0.75) { goNext(); }
+      });
     });
 
     rendition.themes.fontSize(fontSize + "%");
@@ -413,7 +415,6 @@
     });
   }
 
-  // 슬라이더 및 툴바 이벤트
   progressSlider.addEventListener('change', function(e) {
     var percentage = e.target.value / 100;
     if (book && book.locations.length() > 0) {
@@ -442,7 +443,6 @@
     if(rendition) rendition.spread(currentSpread);
   });
 
-  // 애니메이션이 연동된 넘김 함수
   function goPrev() { if(rendition) { rendition.prev(); animatePageTurn('prev'); } }
   function goNext() { if(rendition) { rendition.next(); animatePageTurn('next'); } }
 
@@ -454,19 +454,6 @@
     if (e.key === "ArrowLeft") goPrev();
     if (e.key === "ArrowRight") goNext();
   });
-
-  // 화면 여백(책 내용 바깥쪽) 모바일 스와이프 로직
-  var touchStartX = null;
-  var viewerWrap = document.getElementById('viewer-wrap');
-  viewerWrap.addEventListener('touchstart', function (e) {
-    touchStartX = e.changedTouches[0].screenX;
-  }, { passive: true });
-  viewerWrap.addEventListener('touchend', function (e) {
-    if (touchStartX === null || !rendition) return;
-    var dx = e.changedTouches[0].screenX - touchStartX;
-    if (Math.abs(dx) > 50) { dx > 0 ? goPrev() : goNext(); }
-    touchStartX = null;
-  }, { passive: true });
 
   document.getElementById('font-inc').addEventListener('click', function () {
     fontSize = Math.min(180, fontSize + 10);
