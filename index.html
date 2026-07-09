@@ -200,7 +200,6 @@
 </head>
 <body>
 
-  <!-- BGM 오디오 파일 -->
   <audio id="bgm" src="./music/bgm.mp3" preload="auto" loop></audio>
 
   <div id="library">
@@ -217,7 +216,7 @@
       <button id="back-to-library">◀ 서재</button>
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
       
-      <!-- 🌟 요청하신 순서대로 버튼 배치 변경 완료 -->
+      <!-- 요청하신 정확한 순서: 글자크기+, 음악켜기, 글자크기-, 단면/양면, 글꼴 선택 -->
       <button id="font-inc" title="글자 크게">가+</button>
       <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
       <button id="font-dec" title="글자 작게">가−</button>
@@ -343,24 +342,34 @@
     rendition.hooks.content.register(function(contents) {
       contents.addStylesheet("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500&family=Nanum+Pen+Script&display=swap");
       
+      // 🌟 핵심 버그 수정: 모바일 브라우저의 기본 스와이프(뒤로가기 등) 차단
+      var style = contents.document.createElement("style");
+      style.innerHTML = "html, body { touch-action: pan-y !important; overscroll-behavior-x: none !important; }";
+      contents.document.head.appendChild(style);
+
       var doc = contents.document;
       var win = contents.window;
 
-      var startX = 0, startY = 0, startTime = 0;
+      var startScreenX = 0, startScreenY = 0;
+      var startClientX = 0;
+      var startTime = 0;
       
       function handleTouchStart(e) {
-        startX = e.changedTouches[0].clientX;
-        startY = e.changedTouches[0].clientY;
+        if (e.touches.length > 1) return; // 다중 터치 무시
+        startScreenX = e.touches[0].screenX;
+        startScreenY = e.touches[0].screenY;
+        startClientX = e.touches[0].clientX;
         startTime = new Date().getTime();
       }
       
       function handleTouchEnd(e) {
-        var endX = e.changedTouches[0].clientX;
-        var endY = e.changedTouches[0].clientY;
+        if (e.changedTouches.length === 0) return;
+        var endScreenX = e.changedTouches[0].screenX;
+        var endScreenY = e.changedTouches[0].screenY;
         var endTime = new Date().getTime();
         
-        var diffX = endX - startX;
-        var diffY = endY - startY;
+        var diffX = endScreenX - startScreenX;
+        var diffY = endScreenY - startScreenY;
         var timeDiff = endTime - startTime;
         
         var target = e.target;
@@ -369,17 +378,19 @@
           target = target.parentNode;
         }
 
-        if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) && timeDiff < 800) {
+        // 1. 강력한 스와이프 인식 (40px 이상, 1초 이내 밀기)
+        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) && timeDiff < 1000) {
           if (diffX > 0) { goPrev(); } else { goNext(); }
           if(e.cancelable) e.preventDefault();
           return;
         }
 
-        if (Math.abs(diffX) < 15 && Math.abs(diffY) < 15 && timeDiff < 300) {
+        // 2. 가장자리 가벼운 터치(탭) 인식
+        if (Math.abs(diffX) < 15 && Math.abs(diffY) < 15 && timeDiff < 400) {
           var width = win.innerWidth;
-          if (endX < width * 0.25) { 
+          if (startClientX < width * 0.25) { 
             goPrev(); if(e.cancelable) e.preventDefault();
-          } else if (endX > width * 0.75) { 
+          } else if (startClientX > width * 0.75) { 
             goNext(); if(e.cancelable) e.preventDefault();
           }
         }
@@ -463,6 +474,7 @@
     if (e.key === "ArrowRight") goNext();
   });
 
+  // 액자 바깥 영역(여백) 스와이프 방어선
   var touchStartX = null;
   var touchStartY = null;
   var viewerWrap = document.getElementById('viewer-wrap');
