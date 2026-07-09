@@ -200,7 +200,8 @@
 </head>
 <body>
 
-  <audio id="bgm" src="music/bgm.mp3" loop></audio>
+  <!-- BGM 오디오 파일 -->
+  <audio id="bgm" src="./music/bgm.mp3" preload="auto" loop></audio>
 
   <div id="library">
     <div id="library-header">
@@ -215,8 +216,13 @@
     <header class="toolbar">
       <button id="back-to-library">◀ 서재</button>
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
-      <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
       
+      <!-- 🌟 요청하신 순서대로 버튼 배치 변경 완료 -->
+      <button id="font-inc" title="글자 크게">가+</button>
+      <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
+      <button id="font-dec" title="글자 작게">가−</button>
+      <button id="spread-toggle" title="페이지 보기 방식 전환">📖 양면</button>
+
       <select id="font-family-select" title="글자체 선택">
         <option value="'Gowun Batang', serif" selected>고운바탕 (시집 추천)</option>
         <option value="'Noto Sans KR', sans-serif">본고딕 (깔끔함)</option>
@@ -224,10 +230,6 @@
         <option value="'Gowun Dodum', sans-serif">고운돋움 (정갈함)</option>
         <option value="'Nanum Pen Script', cursive">나눔펜 (감성 손글씨)</option>
       </select>
-      
-      <button id="spread-toggle" title="페이지 보기 방식 전환">📖 양면</button>
-      <button id="font-dec" title="글자 작게">가−</button>
-      <button id="font-inc" title="글자 크게">가+</button>
     </header>
 
     <div id="viewer-wrap">
@@ -246,23 +248,23 @@
 <script>
 (function () {
   var bookList = [
-    { title: "해낭 제1집: 해바람", author: "해낭문학회", url: "books/01.epub", cover: "images/01.jpg" },
-    { title: "해낭 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "books/03.epub", cover: "images/03.jpg" },
-    { title: "해낭 제5집: 고추단 아기 쑤욱 나오니", author: "해낭문학회", url: "books/05.epub", cover: "images/05.jpg" },
-    { title: "해낭 제6집: 역사는 후퇴가 없나니", author: "해낭문학회", url: "books/06.epub", cover: "images/06.jpg" },
-    { title: "해낭 제13집: 달라진 것은 있어도 사라진 것은...", author: "해낭문학회", url: "books/13.epub", cover: "images/13.jpg" },
-    { title: "해낭 제14집: 기쁨과 슬픔이 연대하고서", author: "해낭문학회", url: "books/14.epub", cover: "images/14.jpg" },
-    { title: "해낭 제17집: 어허야라, 황사 바람 불어온다", author: "해낭문학회", url: "books/17.epub", cover: "images/17.jpg" },
-    { title: "해낭 제22집: 아직은 가을을 말하는 것이 어떠랴", author: "해낭문학회", url: "books/22.epub", cover: "images/22.jpg" },
-    { title: "해낭 제23집: 알몸으로 틔우는 푸르름", author: "해낭문학회", url: "books/23.epub", cover: "images/23.jpg" },
-    { title: "해낭 제24집: 밤은 창문을 두드릴 뿐이다", author: "해낭문학회", url: "books/24.epub", cover: "images/24.jpg" },
-    { title: "해낭 제25집: 깊은 물은 소리를 삼키우고", author: "해낭문학회", url: "books/25.epub", cover: "images/25.jpg" },
-    { title: "해낭 제27집: 다시, 길 위에 신새벽의 시선들이", author: "해낭문학회", url: "books/27.epub", cover: "images/27.jpg" },
-    { title: "해낭 제28집: 가을, 하늘의 파랑보다 더 진한", author: "해낭문학회", url: "books/28.epub", cover: "images/28.jpg" },
-    { title: "해낭 제29집: 진원을 알 수 없는 삶의 울림", author: "해낭문학회", url: "books/29.epub", cover: "images/29.jpg" },
-    { title: "해낭 제30집: 가을, 버릴 것 없이 가진 것 없이", author: "해낭문학회", url: "books/30.epub", cover: "images/30.jpg" },
-    { title: "해낭 제31집: 삶은 기다림이 아니다", author: "해낭문학회", url: "books/31.epub", cover: "images/31.jpg" },
-    { title: "해낭 제32집: 내림표 가득한 세상에서", author: "해낭문학회", url: "books/32.epub", cover: "images/32.jpg" }
+    { title: "해낭 제1집: 해바람", author: "해낭문학회", url: "./books/01.epub", cover: "./images/01.jpg" },
+    { title: "해낭 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "./books/03.epub", cover: "./images/03.jpg" },
+    { title: "해낭 제5집: 고추단 아기 쑤욱 나오니", author: "해낭문학회", url: "./books/05.epub", cover: "./images/05.jpg" },
+    { title: "해낭 제6집: 역사는 후퇴가 없나니", author: "해낭문학회", url: "./books/06.epub", cover: "./images/06.jpg" },
+    { title: "해낭 제13집: 달라진 것은 있어도 사라진 것은...", author: "해낭문학회", url: "./books/13.epub", cover: "./images/13.jpg" },
+    { title: "해낭 제14집: 기쁨과 슬픔이 연대하고서", author: "해낭문학회", url: "./books/14.epub", cover: "./images/14.jpg" },
+    { title: "해낭 제17집: 어허야라, 황사 바람 불어온다", author: "해낭문학회", url: "./books/17.epub", cover: "./images/17.jpg" },
+    { title: "해낭 제22집: 아직은 가을을 말하는 것이 어떠랴", author: "해낭문학회", url: "./books/22.epub", cover: "./images/22.jpg" },
+    { title: "해낭 제23집: 알몸으로 틔우는 푸르름", author: "해낭문학회", url: "./books/23.epub", cover: "./images/23.jpg" },
+    { title: "해낭 제24집: 밤은 창문을 두드릴 뿐이다", author: "해낭문학회", url: "./books/24.epub", cover: "./images/24.jpg" },
+    { title: "해낭 제25집: 깊은 물은 소리를 삼키우고", author: "해낭문학회", url: "./books/25.epub", cover: "./images/25.jpg" },
+    { title: "해낭 제27집: 다시, 길 위에 신새벽의 시선들이", author: "해낭문학회", url: "./books/27.epub", cover: "./images/27.jpg" },
+    { title: "해낭 제28집: 가을, 하늘의 파랑보다 더 진한", author: "해낭문학회", url: "./books/28.epub", cover: "./images/28.jpg" },
+    { title: "해낭 제29집: 진원을 알 수 없는 삶의 울림", author: "해낭문학회", url: "./books/29.epub", cover: "./images/29.jpg" },
+    { title: "해낭 제30집: 가을, 버릴 것 없이 가진 것 없이", author: "해낭문학회", url: "./books/30.epub", cover: "./images/30.jpg" },
+    { title: "해낭 제31집: 삶은 기다림이 아니다", author: "해낭문학회", url: "./books/31.epub", cover: "./images/31.jpg" },
+    { title: "해낭 제32집: 내림표 가득한 세상에서", author: "해낭문학회", url: "./books/32.epub", cover: "./images/32.jpg" }
   ];
 
   var book = null, rendition = null;
@@ -287,7 +289,7 @@
       bgmToggle.classList.remove('active');
     } else {
       bgm.play().catch(function(e) { 
-        alert("음악 파일을 재생할 수 없습니다. 파일(music/bgm.mp3)이 있는지 확인해주세요."); 
+        alert("음악 파일(bgm.mp3) 재생에 실패했습니다. 깃허브 캐시가 아직 갱신되지 않았을 수 있으니 나중에 다시 시도해 주세요."); 
       });
       bgmToggle.textContent = '🔇 음악 끄기';
       bgmToggle.classList.add('active');
@@ -341,48 +343,61 @@
     rendition.hooks.content.register(function(contents) {
       contents.addStylesheet("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500&family=Nanum+Pen+Script&display=swap");
       
-      var el = contents.document.documentElement;
+      var doc = contents.document;
+      var win = contents.window;
 
-      // 데스크탑 클릭 인식 (기존 유지)
-      el.addEventListener('click', function(e) {
-        var target = e.target;
-        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
-          if (target.tagName.toLowerCase() === 'a') return;
-          target = target.parentNode;
-        }
-        var clientX = e.clientX;
-        var width = contents.window.innerWidth;
-        if (clientX < width * 0.25) { goPrev(); }
-        else if (clientX > width * 0.75) { goNext(); }
-      });
-
-      // 🌟 모바일 완벽 스와이프(밀기) 로직
-      var startX, startY, startTime;
+      var startX = 0, startY = 0, startTime = 0;
       
-      el.addEventListener('touchstart', function(e) {
-        startX = e.changedTouches[0].screenX;
-        startY = e.changedTouches[0].screenY;
+      function handleTouchStart(e) {
+        startX = e.changedTouches[0].clientX;
+        startY = e.changedTouches[0].clientY;
         startTime = new Date().getTime();
-      }, { passive: true });
+      }
       
-      el.addEventListener('touchend', function(e) {
-        var endX = e.changedTouches[0].screenX;
-        var endY = e.changedTouches[0].screenY;
+      function handleTouchEnd(e) {
+        var endX = e.changedTouches[0].clientX;
+        var endY = e.changedTouches[0].clientY;
         var endTime = new Date().getTime();
         
         var diffX = endX - startX;
         var diffY = endY - startY;
         var timeDiff = endTime - startTime;
+        
+        var target = e.target;
+        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
+          if (target.tagName.toLowerCase() === 'a') return;
+          target = target.parentNode;
+        }
 
-        // X축(좌우)으로 50px 이상 이동했고, Y축(상하)보다 X축 이동이 더 크며, 0.8초 이내로 스와이프 했을 때 작동
         if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) && timeDiff < 800) {
-          if (diffX > 0) {
-            goPrev(); // 오른쪽으로 밀면 이전 페이지
-          } else {
-            goNext(); // 왼쪽으로 밀면 다음 페이지
+          if (diffX > 0) { goPrev(); } else { goNext(); }
+          if(e.cancelable) e.preventDefault();
+          return;
+        }
+
+        if (Math.abs(diffX) < 15 && Math.abs(diffY) < 15 && timeDiff < 300) {
+          var width = win.innerWidth;
+          if (endX < width * 0.25) { 
+            goPrev(); if(e.cancelable) e.preventDefault();
+          } else if (endX > width * 0.75) { 
+            goNext(); if(e.cancelable) e.preventDefault();
           }
         }
-      }, { passive: true });
+      }
+
+      doc.addEventListener('touchstart', handleTouchStart, { passive: true });
+      doc.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+      doc.addEventListener('click', function(e) {
+        var target = e.target;
+        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
+          if (target.tagName.toLowerCase() === 'a') return;
+          target = target.parentNode;
+        }
+        var width = win.innerWidth;
+        if (e.clientX < width * 0.25) { goPrev(); }
+        else if (e.clientX > width * 0.75) { goNext(); }
+      });
     });
 
     rendition.themes.fontSize(fontSize + "%");
@@ -448,7 +463,6 @@
     if (e.key === "ArrowRight") goNext();
   });
 
-  // 바깥 여백 스와이프 기능 (뷰어 외부도 동일하게 스와이프 지원)
   var touchStartX = null;
   var touchStartY = null;
   var viewerWrap = document.getElementById('viewer-wrap');
@@ -463,7 +477,6 @@
     var diffX = e.changedTouches[0].screenX - touchStartX;
     var diffY = e.changedTouches[0].screenY - touchStartY;
     
-    // 외부 스와이프 역시 좌우 구분이 확실할 때만 작동
     if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) { 
       diffX > 0 ? goPrev() : goNext(); 
     }
