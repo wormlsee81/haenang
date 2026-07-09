@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>숲을 위한 씨앗 해낭문학회</title>
 
-<!-- 외부 웹 폰트 로드 (뷰어 내부와 외부 UI 모두 사용) -->
+<!-- 외부 웹 폰트 로드 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500&family=Noto+Serif+KR:wght@400;500&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 
 <!-- ePub.js 라이브러리 -->
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -16,14 +16,14 @@
 
 <style>
   :root {
-    /* 모던하고 우아한 프리미엄 컬러 팔레트 */
-    --bg-color: #FDFCF9;
-    --text-primary: #2C2C2C;
-    --text-secondary: #757575;
-    --accent: #265543;
-    --accent-hover: #193A2D;
-    --border-color: #E6E2D8;
-    --toolbar-bg: rgba(253, 252, 249, 0.98);
+    /* 🌟 프리미엄 갤러리 컬러 팔레트 */
+    --bg-color: #FBF9F6;          /* 따뜻하고 고급스러운 웜 아이보리 */
+    --text-primary: #2C2A28;      /* 눈이 편안한 다크 차콜 */
+    --text-secondary: #8B8680;
+    --accent: #3A5A4C;            /* 차분하고 깊이 있는 포레스트 그린 */
+    --accent-hover: #264035;
+    --border-color: #E8E3DB;
+    --toolbar-bg: rgba(251, 249, 246, 0.92);
   }
 
   * { box-sizing: border-box; }
@@ -40,55 +40,69 @@
 
   /* ---------- 서재 (책장) UI ---------- */
   #library {
-    padding: 4rem 2rem;
+    padding: 5rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
   }
   
-  #library h1 {
-    font-family: 'Gowun Batang', serif;
-    font-size: 2.2rem;
-    margin-bottom: 3rem;
-    color: var(--text-primary);
+  #library-header {
+    text-align: center;
+    margin-bottom: 4rem;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1.5rem;
-    letter-spacing: -0.03em;
+    padding-bottom: 2.5rem;
+  }
+
+  #library-header .subtitle {
+    font-family: 'Gowun Batang', serif;
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin: 0 0 0.8rem 0;
+    letter-spacing: 0.15em;
+  }
+  
+  #library-header h1 {
+    font-family: 'Gowun Batang', serif;
+    font-size: 2.5rem;
+    margin: 0;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
   }
 
   .bookshelf {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 3.5rem 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 4rem 2.5rem;
   }
 
   .book-card {
     cursor: pointer;
     text-align: left;
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  .book-card:hover { transform: translateY(-8px); }
+  .book-card:hover { transform: translateY(-10px); }
 
   .book-cover {
     width: 100%; aspect-ratio: 2 / 3; object-fit: cover;
-    border-radius: 2px 6px 6px 2px;
+    border-radius: 2px 7px 7px 2px;
     box-shadow: 
-      inset 4px 0 10px rgba(0,0,0,0.1),
-      inset -1px 0 2px rgba(255,255,255,0.4),
-      4px 8px 16px rgba(0,0,0,0.08);
-    margin-bottom: 1rem; background-color: #E8E8E8;
-    transition: box-shadow 0.3s ease;
+      inset 4px 0 12px rgba(0,0,0,0.08),
+      inset -1px 0 2px rgba(255,255,255,0.5),
+      5px 10px 20px rgba(0,0,0,0.06);
+    margin-bottom: 1.2rem; background-color: #E8E8E8;
+    transition: box-shadow 0.4s ease;
   }
   
   .book-card:hover .book-cover {
     box-shadow: 
-      inset 4px 0 10px rgba(0,0,0,0.1),
-      inset -1px 0 2px rgba(255,255,255,0.4),
-      6px 14px 24px rgba(0,0,0,0.12);
+      inset 4px 0 12px rgba(0,0,0,0.08),
+      inset -1px 0 2px rgba(255,255,255,0.5),
+      8px 18px 30px rgba(0,0,0,0.12);
   }
 
   .book-title {
-    font-weight: 700; font-size: 1.05rem; margin: 0 0 0.4rem 0;
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 500; font-size: 1.05rem; margin: 0 0 0.4rem 0;
     line-height: 1.4; word-break: keep-all; color: var(--text-primary);
   }
 
@@ -99,24 +113,20 @@
     position: fixed; inset: 0; display: flex; flex-direction: column;
     background: var(--bg-color);
     transform: translateY(100%);
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     z-index: 100;
   }
   #reader-shell.visible { transform: translateY(0); }
 
-  /* 🌟 1줄 고정 가로 스크롤 툴바 */
+  /* 🌟 반응형 툴바 */
   header.toolbar {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    padding: 0.6rem 1rem;
-    background: var(--toolbar-bg);
+    display: flex; flex-wrap: nowrap; align-items: center;
+    padding: 0.8rem 1.2rem; background: var(--toolbar-bg);
     border-bottom: 1px solid var(--border-color); 
-    gap: 0.8rem;
-    z-index: 10;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    gap: 0.8rem; z-index: 10;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    backdrop-filter: blur(10px);
   }
   
   header.toolbar::-webkit-scrollbar { display: none; }
@@ -124,45 +134,65 @@
   header.toolbar > * { flex-shrink: 0; }
 
   .shell-book-title {
-    font-family: 'Gowun Batang', serif; font-size: 1rem; font-weight: bold;
-    color: var(--text-primary); margin: 0 0.5rem;
+    font-family: 'Gowun Batang', serif; font-size: 1.05rem; font-weight: bold;
+    color: var(--text-primary); margin: 0 0.5rem; text-align: center;
   }
   
   .toolbar button, .toolbar select, footer.statusbar button {
-    background: #FFFFFF; border: 1px solid #D9D3C7; color: var(--text-primary);
-    border-radius: 20px; padding: 0.4rem 0.9rem; font-size: 0.85rem; cursor: pointer;
-    transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    background: #FFFFFF; border: 1px solid var(--border-color); color: var(--text-primary);
+    border-radius: 25px; padding: 0.45rem 1rem; font-size: 0.85rem; cursor: pointer;
+    transition: all 0.25s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
   }
   
   .toolbar button:hover, .toolbar select:hover, footer.statusbar button:hover {
-    border-color: var(--accent); color: var(--accent); background: #F2F7F5;
+    border-color: var(--accent); color: var(--accent); background: #F4F7F6;
   }
   
   #back-to-library { background: var(--accent); color: white; border: none; }
   #back-to-library:hover { background: var(--accent-hover); color: white; }
 
+  /* 음악 버튼 활성화 상태 */
+  #bgm-toggle.active {
+    background: var(--accent); color: white; border-color: var(--accent);
+  }
+
   @media (max-width: 650px) {
+    #library { padding: 3rem 1.2rem; }
+    #library-header h1 { font-size: 1.8rem; }
     header.toolbar { padding: 0.5rem 0.8rem; gap: 0.5rem; }
-    .toolbar button, .toolbar select { padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+    .toolbar button, .toolbar select { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
     .shell-book-title { font-size: 0.95rem; margin: 0 0.2rem; }
     footer.statusbar { padding: 0.6rem 0.8rem; gap: 0.5rem; }
-    footer.statusbar button { padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+    footer.statusbar button { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
   }
 
   #viewer-wrap { flex: 1; position: relative; overflow: hidden; background: #FFFFFF; }
-  #viewer { position: absolute; inset: 0; }
+  #viewer { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* 🌟 페이지 넘김 애니메이션 CSS */
+  @keyframes turnNext {
+    0% { transform: translateX(30px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes turnPrev {
+    0% { transform: translateX(-30px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+  .turn-next-anim { animation: turnNext 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  .turn-prev-anim { animation: turnPrev 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
   #loading {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem; opacity: .9; font-weight: bold; color: var(--accent); z-index: 5;
-    background: rgba(253,252,249,0.9);
+    background: rgba(251,249,246,0.95);
   }
   #loading[hidden] { display: none !important; }
 
   footer.statusbar {
-    padding: 0.8rem 1.2rem; background: var(--toolbar-bg);
+    padding: 1rem 1.5rem; background: var(--toolbar-bg);
     border-top: 1px solid var(--border-color);
     display: flex; align-items: center; gap: 1rem; font-size: 0.85rem;
+    backdrop-filter: blur(10px);
   }
   
   #progress-slider {
@@ -176,9 +206,16 @@
 </head>
 <body>
 
+  <!-- 🌟 배경 음악 파일 설정 (반복 재생) -->
+  <!-- 경로를 ./music/bgm.mp3 와 같이 설정했습니다. -->
+  <audio id="bgm" src="./music/bgm.mp3" loop></audio>
+
   <!-- 메인 서재 화면 -->
   <div id="library">
-    <h1>숲을 위한 씨앗 해낭문학회</h1>
+    <div id="library-header">
+      <p class="subtitle">조용한 숲속에서 만나는 시의 향연</p>
+      <h1>숲을 위한 씨앗 해낭문학회</h1>
+    </div>
     <div class="bookshelf" id="bookshelf">
     </div>
   </div>
@@ -189,6 +226,9 @@
       <button id="back-to-library">◀ 서재</button>
       
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
+      
+      <!-- 🌟 음악 컨트롤 버튼 -->
+      <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
       
       <select id="font-family-select" title="글자체 선택">
         <option value="'Gowun Batang', serif" selected>고운바탕 (시집 추천)</option>
@@ -218,7 +258,6 @@
 
 <script>
 (function () {
-  // 🌟 제목을 '해낭시 제X집'에서 '해낭 제X집'으로 모두 변경했습니다.
   var bookList = [
     { title: "해낭 제1집: 해바람", author: "해낭문학회", url: "./books/01.epub", cover: "./images/01.jpg" },
     { title: "해낭 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "./books/03.epub", cover: "./images/03.jpg" },
@@ -248,28 +287,58 @@
   var loadingEl = document.getElementById('loading');
   var bookshelfEl = document.getElementById('bookshelf');
   var progressSlider = document.getElementById('progress-slider');
+  var viewerEl = document.getElementById('viewer');
+
+  // 🌟 음악 컨트롤 로직
+  var bgm = document.getElementById('bgm');
+  var bgmToggle = document.getElementById('bgm-toggle');
+  var isPlaying = false;
+
+  bgmToggle.addEventListener('click', function() {
+    if (isPlaying) {
+      bgm.pause();
+      bgmToggle.textContent = '🎵 음악 켜기';
+      bgmToggle.classList.remove('active');
+    } else {
+      bgm.play().catch(function(e) { 
+        alert("음악 파일을 찾을 수 없습니다. ./music/bgm.mp3 파일이 있는지 확인해주세요."); 
+      });
+      bgmToggle.textContent = '🔇 음악 끄기';
+      bgmToggle.classList.add('active');
+    }
+    isPlaying = !isPlaying;
+  });
 
   // 책장 UI 생성
   bookList.forEach(function(item) {
     var card = document.createElement('div');
     card.className = 'book-card';
-    
     card.innerHTML = `
       <img src="${item.cover}" alt="${item.title} 표지" class="book-cover" onerror="this.src='https://via.placeholder.com/150x225?text=No+Cover'">
       <p class="book-title">${item.title}</p>
       <p class="book-author">${item.author}</p>
     `;
-    
     card.addEventListener('click', function() {
       openBook(item.url, item.title);
     });
     bookshelfEl.appendChild(card);
   });
 
+  // 페이지 애니메이션 트리거 함수
+  function animatePageTurn(direction) {
+    viewerEl.classList.remove('turn-next-anim', 'turn-prev-anim');
+    void viewerEl.offsetWidth; // 리플로우 강제 발생
+    if (direction === 'next') {
+      viewerEl.classList.add('turn-next-anim');
+    } else {
+      viewerEl.classList.add('turn-prev-anim');
+    }
+  }
+
   // 책 뷰어 렌더링 함수
   function openBook(url, titleStr) {
     if(book) { book.destroy(); }
-    document.getElementById('viewer').innerHTML = '';
+    viewerEl.innerHTML = '';
     progressSlider.value = 0;
     progressSlider.disabled = true; 
     document.getElementById('progress-label').textContent = '0%';
@@ -287,23 +356,46 @@
     });
     
     rendition.hooks.content.register(function(contents) {
-      contents.addStylesheet("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500&family=Noto+Serif+KR:wght@400;500&family=Nanum+Pen+Script&display=swap");
+      contents.addStylesheet("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500&family=Nanum+Pen+Script&display=swap");
       
       var el = contents.document.documentElement;
+      
+      // 데스크탑 클릭 애니메이션 연동
       el.addEventListener('click', function(e) {
         var target = e.target;
         while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
           if (target.tagName.toLowerCase() === 'a') return;
           target = target.parentNode;
         }
-
         var clientX = e.clientX;
         var width = contents.window.innerWidth;
+        if (clientX < width * 0.25) { goPrev(); } 
+        else if (clientX > width * 0.75) { goNext(); }
+      });
 
-        if (clientX < width * 0.25) {
-          rendition.prev();
-        } else if (clientX > width * 0.75) {
-          rendition.next();
+      // 모바일 좌우 탭 인식
+      var startX, startY;
+      el.addEventListener('touchstart', function(e) {
+        startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY;
+      }, { passive: true });
+      
+      el.addEventListener('touchend', function(e) {
+        var target = e.target;
+        while (target && target.tagName && target.tagName.toLowerCase() !== 'body') {
+          if (target.tagName.toLowerCase() === 'a') return;
+          target = target.parentNode;
+        }
+
+        var endX = e.changedTouches[0].screenX;
+        var endY = e.changedTouches[0].screenY;
+        
+        if (Math.abs(endX - startX) < 10 && Math.abs(endY - startY) < 10) {
+          var clientX = e.changedTouches[0].clientX;
+          var width = contents.window.innerWidth;
+
+          if (clientX < width * 0.25) { goPrev(); e.preventDefault(); } 
+          else if (clientX > width * 0.75) { goNext(); e.preventDefault(); }
         }
       });
     });
@@ -331,7 +423,6 @@
     });
   }
 
-  // 슬라이더 및 툴바 이벤트
   progressSlider.addEventListener('change', function(e) {
     var percentage = e.target.value / 100;
     if (book && book.locations.length() > 0) {
@@ -342,6 +433,9 @@
 
   document.getElementById('back-to-library').addEventListener('click', function () {
     shell.classList.remove('visible');
+    // 서재로 나갈 때 음악을 끄고 싶다면 아래 두 줄의 주석(//)을 지워주세요.
+    // bgm.pause(); 
+    // bgmToggle.textContent = '🎵 음악 켜기'; bgmToggle.classList.remove('active'); isPlaying = false;
   });
 
   document.getElementById('font-family-select').addEventListener('change', function(e) {
@@ -360,8 +454,8 @@
     if(rendition) rendition.spread(currentSpread);
   });
 
-  function goPrev() { if(rendition) rendition.prev(); }
-  function goNext() { if(rendition) rendition.next(); }
+  function goPrev() { if(rendition) { rendition.prev(); animatePageTurn('prev'); } }
+  function goNext() { if(rendition) { rendition.next(); animatePageTurn('next'); } }
 
   document.getElementById('prev-btn').addEventListener('click', goPrev);
   document.getElementById('next-btn').addEventListener('click', goNext);
