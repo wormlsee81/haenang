@@ -44,18 +44,19 @@
     margin: 0 auto;
   }
   
+  /* 🌟 헤더 여백 대폭 축소 */
   #library-header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: 3rem; /* 기존 4rem에서 축소 */
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 2.5rem;
+    padding-bottom: 1.2rem; /* 기존 2.5rem에서 축소 */
   }
 
   #library-header .subtitle {
     font-family: 'Gowun Batang', serif;
     font-size: 1.15rem;
     color: var(--accent);
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.5rem 0; /* 기존 1rem에서 축소하여 타이틀과 밀착 */
     letter-spacing: 0.05em;
   }
   
@@ -67,12 +68,13 @@
     letter-spacing: -0.02em;
   }
 
-  /* 🌟 재능기부 문구 디자인 */
+  /* 🌟 재능기부 문구 우측 정렬 및 간격 축소 */
   #library-header .credit {
     font-family: 'Gowun Dodum', sans-serif;
     font-size: 0.85rem;
     color: var(--text-secondary);
-    margin: 1.5rem 0 0 0;
+    text-align: right; /* 우측 끝으로 정렬 */
+    margin: 0.5rem 0 0 0; /* 기존 1.5rem에서 축소하여 타이틀 바로 아래에 위치 */
     letter-spacing: 0.05em;
   }
 
@@ -228,9 +230,9 @@
 
   <div id="library">
     <div id="library-header">
-      <!-- 🌟 새롭게 적용된 서브타이틀과 재능기부 문구 -->
       <p class="subtitle">푸르던 날에 심어둔 씨앗, 다시 하나의 숲으로 만나다</p>
       <h1>숲을 위한 씨앗 해낭문학회</h1>
+      <!-- 우측 정렬된 재능기부 텍스트 -->
       <p class="credit">해낭 20회 이재근 재능기부</p>
     </div>
     <div class="bookshelf" id="bookshelf">
@@ -242,7 +244,7 @@
       <button id="back-to-library">◀ 서재</button>
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
       
-      <!-- 버튼 순서: 글자크기+, 음악켜기, 글자크기-, 단면/양면, 글꼴 선택 -->
+      <!-- 버튼 순서 유지 -->
       <button id="font-inc" title="글자 크게">가+</button>
       <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
       <button id="font-dec" title="글자 작게">가−</button>
