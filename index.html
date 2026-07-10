@@ -25,6 +25,17 @@
     --toolbar-bg: rgba(251, 249, 246, 0.92);
   }
 
+  /* 🌟 달빛 모드 (다크 모드) 색상 설정 */
+  [data-theme="dark"] {
+    --bg-color: #1E1E1E;
+    --text-primary: #EAEAEA;
+    --text-secondary: #9E9E9E;
+    --accent: #6C9A8B;
+    --accent-hover: #5A8577;
+    --border-color: #333333;
+    --toolbar-bg: rgba(30, 30, 30, 0.95);
+  }
+
   * { box-sizing: border-box; }
 
   html, body {
@@ -33,9 +44,10 @@
     color: var(--text-primary);
     font-family: 'Noto Sans KR', sans-serif;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s, color 0.3s;
   }
 
-  button, select { font-family: inherit; outline: none; }
+  button, select, input { font-family: inherit; outline: none; }
 
   /* ---------- 서재 (책장) UI ---------- */
   #library {
@@ -48,7 +60,7 @@
     text-align: center;
     margin-bottom: 3rem;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1.2rem;
+    padding-bottom: 1.5rem;
   }
 
   #library-header .subtitle {
@@ -62,9 +74,30 @@
   #library-header h1 {
     font-family: 'Gowun Batang', serif;
     font-size: 2.5rem;
-    margin: 0;
+    margin: 0 0 1rem 0;
     color: var(--text-primary);
     letter-spacing: -0.02em;
+  }
+
+  #global-search-wrap {
+    max-width: 400px;
+    margin: 0 auto 0.5rem auto;
+    position: relative;
+  }
+  #global-search-input {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    border-radius: 30px;
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    transition: all 0.3s ease;
+  }
+  #global-search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 4px 15px rgba(58, 90, 76, 0.1);
   }
 
   #library-header .credit {
@@ -121,7 +154,7 @@
     position: fixed; inset: 0; display: flex; flex-direction: column;
     background: var(--bg-color);
     transform: translateY(100%);
-    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s;
     z-index: 100;
   }
   #reader-shell.visible { transform: translateY(0); }
@@ -134,6 +167,7 @@
     overflow-x: auto; -webkit-overflow-scrolling: touch;
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     backdrop-filter: blur(10px);
+    transition: background-color 0.3s, border-color 0.3s;
   }
   
   header.toolbar::-webkit-scrollbar { display: none; }
@@ -146,13 +180,13 @@
   }
   
   .toolbar button, .toolbar select, footer.statusbar button {
-    background: #FFFFFF; border: 1px solid var(--border-color); color: var(--text-primary);
+    background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary);
     border-radius: 25px; padding: 0.45rem 1rem; font-size: 0.85rem; cursor: pointer;
     transition: all 0.25s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
   }
   
   .toolbar button:hover, .toolbar select:hover, footer.statusbar button:hover {
-    border-color: var(--accent); color: var(--accent); background: #F4F7F6;
+    border-color: var(--accent); color: var(--accent);
   }
   
   #back-to-library { background: var(--accent); color: white; border: none; }
@@ -171,37 +205,66 @@
     footer.statusbar button { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
   }
 
-  #viewer-wrap { flex: 1; position: relative; overflow: hidden; background: #FFFFFF; }
+  #viewer-wrap { flex: 1; position: relative; overflow: hidden; background: var(--bg-color); transition: background-color 0.3s; }
   #viewer { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* 🌟 통합 사이드 패널 (목차 & 검색) 디자인 */
+  .side-panel {
+    position: absolute; top: 0; width: 320px; height: 100%;
+    background: var(--toolbar-bg); backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px rgba(0,0,0,0.08); z-index: 30;
+    display: flex; flex-direction: column; transition: transform 0.3s ease;
+  }
+  .left-panel { left: 0; border-right: 1px solid var(--border-color); transform: translateX(-100%); }
+  .right-panel { right: 0; border-left: 1px solid var(--border-color); transform: translateX(100%); }
+  .left-panel.visible, .right-panel.visible { transform: translateX(0); }
+
+  .panel-header {
+    padding: 1rem; border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+  }
+  .panel-header h3 { margin: 0; font-size: 1.1rem; font-family: 'Gowun Batang', serif; color: var(--text-primary); }
+  .panel-close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-primary); padding: 0; box-shadow: none; }
+  .panel-close-btn:hover { color: var(--accent); border-color: transparent; background: transparent; }
+
+  .panel-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
+  .panel-list li {
+    padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.95rem;
+    line-height: 1.5; cursor: pointer; transition: background 0.2s; color: var(--text-primary);
+  }
+  .panel-list li:hover { background: rgba(0,0,0,0.05); }
+  [data-theme="dark"] .panel-list li:hover { background: rgba(255,255,255,0.05); }
+
+  #inbook-search-input {
+    flex: 1; padding: 0.5rem; border: 1px solid var(--border-color);
+    border-radius: 4px; font-size: 0.9rem; background: var(--bg-color); color: var(--text-primary);
+  }
+  #inbook-search-btn {
+    background: var(--accent); color: white; border: none;
+    padding: 0 1rem; border-radius: 4px; cursor: pointer; box-shadow: none;
+  }
+
+  @media (max-width: 650px) {
+    .side-panel { width: 100%; } /* 모바일에서는 패널이 꽉 차게 */
+  }
 
   /* 투명 터치/스와이프 패널 */
   .touch-overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 30%;
-    z-index: 20;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+    position: absolute; top: 0; bottom: 0; width: 30%; z-index: 20;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   #touch-overlay-left { left: 0; }
   #touch-overlay-right { right: 0; }
 
-  @keyframes turnNext {
-    0% { transform: translateX(30px); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
-  }
-  @keyframes turnPrev {
-    0% { transform: translateX(-30px); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
-  }
+  @keyframes turnNext { 0% { transform: translateX(30px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+  @keyframes turnPrev { 0% { transform: translateX(-30px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
   .turn-next-anim { animation: turnNext 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
   .turn-prev-anim { animation: turnPrev 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
   #loading {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem; opacity: .9; font-weight: bold; color: var(--accent); z-index: 5;
-    background: rgba(251,249,246,0.95);
+    background: var(--bg-color);
   }
   #loading[hidden] { display: none !important; }
 
@@ -209,14 +272,10 @@
     padding: 1rem 1.5rem; background: var(--toolbar-bg);
     border-top: 1px solid var(--border-color);
     display: flex; align-items: center; gap: 1rem; font-size: 0.85rem;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px); transition: background-color 0.3s, border-color 0.3s;
   }
   
-  #progress-slider {
-    flex: 1; cursor: pointer; accent-color: var(--accent);
-    height: 4px; border-radius: 2px; outline: none;
-  }
-  
+  #progress-slider { flex: 1; cursor: pointer; accent-color: var(--accent); height: 4px; border-radius: 2px; outline: none; }
   #progress-label { min-width: 4ch; text-align: right; color: var(--text-secondary); font-weight: bold; }
 
 </style>
@@ -230,6 +289,12 @@
     <div id="library-header">
       <p class="subtitle">푸르던 날에 심어둔 씨앗, 다시 하나의 숲으로 만나다</p>
       <h1>숲을 위한 씨앗 해낭문학회</h1>
+      
+      <!-- 메인 화면 통합 검색창 -->
+      <div id="global-search-wrap">
+        <input type="text" id="global-search-input" placeholder="시집 제목 검색...">
+      </div>
+
       <p class="credit">해낭 20회 이재근 재능기부</p>
     </div>
     <div class="bookshelf" id="bookshelf">
@@ -240,6 +305,11 @@
     <header class="toolbar">
       <button id="back-to-library">◀ 서재</button>
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
+      
+      <!-- 🌟 추가된 목차, 달빛 모드 및 정리된 버튼 순서 -->
+      <button id="toc-toggle-btn" title="목차 보기">📑 목차</button>
+      <button id="search-toggle-btn" title="이 시집에서 검색">🔍 검색</button>
+      <button id="theme-toggle" title="달빛 모드">🌙 달빛 모드</button>
       
       <button id="font-inc" title="글자 크게">가+</button>
       <button id="bgm-toggle" title="음악 재생/정지">🎵 해낭회가</button>
@@ -262,6 +332,24 @@
       <div id="touch-overlay-left" class="touch-overlay"></div>
       <div id="touch-overlay-right" class="touch-overlay"></div>
 
+      <!-- 🌟 목차 패널 (왼쪽) -->
+      <div id="toc-panel" class="side-panel left-panel">
+        <div class="panel-header">
+          <h3>목차</h3>
+          <button class="panel-close-btn" id="toc-close-btn">✖</button>
+        </div>
+        <ul id="toc-list" class="panel-list"></ul>
+      </div>
+
+      <!-- 🌟 책 내부 검색 패널 (오른쪽) -->
+      <div id="search-panel" class="side-panel right-panel">
+        <div class="panel-header">
+          <input type="text" id="inbook-search-input" placeholder="본문 내용, 작가 검색...">
+          <button id="inbook-search-btn">검색</button>
+        </div>
+        <ul id="search-results" class="panel-list"></ul>
+      </div>
+
       <div id="loading" hidden>책을 펼치는 중...</div>
     </div>
 
@@ -275,7 +363,6 @@
 
 <script>
 (function () {
-  // 🌟 말줄임표로 생략되었던 13집, 42집, 43집 전체 문장 복원 완료!
   var bookList = [
     { title: "해낭 제1집: 해바람", author: "해낭문학회", url: "./books/01.epub", cover: "./images/01.jpg" },
     { title: "해낭 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "./books/03.epub", cover: "./images/03.jpg" },
@@ -295,7 +382,7 @@
     { title: "해낭 제31집: 삶은 기다림이 아니다", author: "해낭문학회", url: "./books/31.epub", cover: "./images/31.jpg" },
     { title: "해낭 제32집: 내림표 가득한 세상에서", author: "해낭문학회", url: "./books/32.epub", cover: "./images/32.jpg" },
     { title: "해낭 제33집: 생의 언저리를 할퀴고 간 봄", author: "해낭문학회", url: "./books/33.epub", cover: "./images/33.jpg" },
-    { title: "해낭 제34집: 온 천지애 떨어져 제 이름 버리고", author: "해낭문학회", url: "./books/34.epub", cover: "./images/34.jpg" },
+    { title: "해낭 제34집: 온 천지에 떨어져 제 이름 버리고", author: "해낭문학회", url: "./books/34.epub", cover: "./images/34.jpg" },
     { title: "해낭 제37집: 삶의 무늬를 그리고, 지우고, 다시", author: "해낭문학회", url: "./books/37.epub", cover: "./images/37.jpg" },
     { title: "해낭 제38집: 덜된 잠을 깨우는 달콤함", author: "해낭문학회", url: "./books/38.epub", cover: "./images/38.jpg" },
     { title: "해낭 제39집: 불을 밝히기 전의 어스름", author: "해낭문학회", url: "./books/39.epub", cover: "./images/39.jpg" },
@@ -315,6 +402,21 @@
   var progressSlider = document.getElementById('progress-slider');
   var viewerEl = document.getElementById('viewer');
 
+  // 🌟 달빛 모드 상태 및 로직
+  var isDarkMode = false;
+  var themeToggleBtn = document.getElementById('theme-toggle');
+
+  themeToggleBtn.addEventListener('click', function() {
+    isDarkMode = !isDarkMode;
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    themeToggleBtn.innerHTML = isDarkMode ? '☀️ 햇빛 모드' : '🌙 달빛 모드';
+    
+    if (rendition) {
+      rendition.themes.select(isDarkMode ? "dark" : "light");
+    }
+  });
+
+  // BGM 로직
   var bgm = document.getElementById('bgm');
   var bgmToggle = document.getElementById('bgm-toggle');
   var isPlaying = false;
@@ -334,18 +436,38 @@
     isPlaying = !isPlaying;
   });
 
-  bookList.forEach(function(item) {
-    var card = document.createElement('div');
-    card.className = 'book-card';
-    card.innerHTML = `
-      <img src="${item.cover}" alt="${item.title} 표지" class="book-cover" onerror="this.src='https://via.placeholder.com/150x225?text=No+Cover'">
-      <p class="book-title">${item.title}</p>
-      <p class="book-author">${item.author}</p>
-    `;
-    card.addEventListener('click', function() {
-      openBook(item.url, item.title);
+  // 서재 렌더링
+  function renderBooks() {
+    bookshelfEl.innerHTML = '';
+    bookList.forEach(function(item) {
+      var card = document.createElement('div');
+      card.className = 'book-card';
+      card.innerHTML = `
+        <img src="${item.cover}" alt="${item.title} 표지" class="book-cover" onerror="this.src='https://via.placeholder.com/150x225?text=No+Cover'">
+        <p class="book-title">${item.title}</p>
+        <p class="book-author">${item.author}</p>
+      `;
+      card.addEventListener('click', function() {
+        openBook(item.url, item.title);
+      });
+      bookshelfEl.appendChild(card);
     });
-    bookshelfEl.appendChild(card);
+  }
+  renderBooks(); 
+
+  // 메인 통합 검색창
+  var globalSearchInput = document.getElementById('global-search-input');
+  globalSearchInput.addEventListener('input', function(e) {
+    var query = e.target.value.toLowerCase();
+    var cards = bookshelfEl.querySelectorAll('.book-card');
+    cards.forEach(function(card) {
+      var title = card.querySelector('.book-title').textContent.toLowerCase();
+      if (title.includes(query)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
   });
 
   function animatePageTurn(direction) {
@@ -369,6 +491,13 @@
     document.getElementById('progress-label').textContent = '0%';
     document.getElementById('shell-title').textContent = titleStr;
     
+    // 패널 초기화
+    document.getElementById('search-panel').classList.remove('visible');
+    document.getElementById('toc-panel').classList.remove('visible');
+    document.getElementById('inbook-search-input').value = '';
+    document.getElementById('search-results').innerHTML = '';
+    document.getElementById('toc-list').innerHTML = '';
+    
     loadingEl.hidden = false;
     shell.classList.add('visible');
 
@@ -379,6 +508,11 @@
       height: "100%", 
       spread: currentSpread 
     });
+    
+    // 🌟 테마 등록 및 적용 (달빛/햇빛)
+    rendition.themes.register("light", { "body": { "background": "#FBF9F6", "color": "#2C2A28" } });
+    rendition.themes.register("dark", { "body": { "background": "#1E1E1E", "color": "#EAEAEA" } });
+    rendition.themes.select(isDarkMode ? "dark" : "light");
     
     rendition.hooks.content.register(function(contents) {
       contents.addStylesheet("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500&family=Nanum+Pen+Script&display=swap");
@@ -407,6 +541,19 @@
     rendition.themes.font(currentFont);
 
     book.ready.then(function() {
+      // 🌟 목차(Navigation) 로딩
+      book.loaded.navigation.then(function(nav) {
+        var tocList = document.getElementById('toc-list');
+        nav.forEach(function(navItem) {
+          var li = document.createElement('li');
+          li.textContent = navItem.label;
+          li.addEventListener('click', function() {
+            rendition.display(navItem.href);
+            if(window.innerWidth <= 650) { document.getElementById('toc-panel').classList.remove('visible'); }
+          });
+          tocList.appendChild(li);
+        });
+      });
       return book.locations.generate(1600);
     }).then(function(locations) {
       progressSlider.disabled = false;
@@ -426,6 +573,75 @@
     });
   }
 
+  // 🌟 목차 패널 로직
+  var tocPanel = document.getElementById('toc-panel');
+  var tocToggleBtn = document.getElementById('toc-toggle-btn');
+  var tocCloseBtn = document.getElementById('toc-close-btn');
+
+  tocToggleBtn.addEventListener('click', function() {
+    tocPanel.classList.toggle('visible');
+    searchPanel.classList.remove('visible'); // 검색창 열려있으면 닫기
+  });
+  tocCloseBtn.addEventListener('click', function() {
+    tocPanel.classList.remove('visible');
+  });
+
+  // 🌟 책 내부 검색 패널 로직
+  var searchPanel = document.getElementById('search-panel');
+  var searchToggleBtn = document.getElementById('search-toggle-btn');
+  var searchInputInBook = document.getElementById('inbook-search-input');
+  var inbookSearchBtn = document.getElementById('inbook-search-btn');
+  var searchResultsList = document.getElementById('search-results');
+
+  searchToggleBtn.addEventListener('click', function() {
+    searchPanel.classList.toggle('visible');
+    tocPanel.classList.remove('visible'); // 목차 열려있으면 닫기
+    if (searchPanel.classList.contains('visible')) {
+      searchInputInBook.focus();
+    }
+  });
+
+  inbookSearchBtn.addEventListener('click', function() {
+    var q = searchInputInBook.value.trim();
+    if (!q || !book) return;
+    
+    searchResultsList.innerHTML = '<li style="color:var(--accent);">열심히 찾는 중입니다...</li>';
+    
+    Promise.all(
+      book.spine.spineItems.map(function(item) {
+        return item.load(book.load.bind(book)).then(function() {
+          var results = item.find(q);
+          item.unload();
+          return results;
+        });
+      })
+    ).then(function(results) {
+      var mergedResults = [].concat.apply([], results);
+      searchResultsList.innerHTML = '';
+      
+      if (mergedResults.length === 0) {
+        searchResultsList.innerHTML = '<li>일치하는 내용이 없습니다.</li>';
+        return;
+      }
+      
+      mergedResults.forEach(function(result) {
+        var li = document.createElement('li');
+        li.textContent = "..." + result.excerpt + "...";
+        li.addEventListener('click', function() {
+          rendition.display(result.cfi);
+          if(window.innerWidth <= 650) { searchPanel.classList.remove('visible'); }
+        });
+        searchResultsList.appendChild(li);
+      });
+    }).catch(function(err) {
+      searchResultsList.innerHTML = '<li>검색 중 오류가 발생했습니다.</li>';
+    });
+  });
+
+  searchInputInBook.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') { inbookSearchBtn.click(); }
+  });
+
   progressSlider.addEventListener('change', function(e) {
     var percentage = e.target.value / 100;
     if (book && book.locations.length() > 0) {
@@ -436,6 +652,8 @@
 
   document.getElementById('back-to-library').addEventListener('click', function () {
     shell.classList.remove('visible');
+    searchPanel.classList.remove('visible'); 
+    tocPanel.classList.remove('visible');
   });
 
   document.getElementById('font-family-select').addEventListener('change', function(e) {
