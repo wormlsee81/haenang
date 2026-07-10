@@ -44,19 +44,19 @@
     margin: 0 auto;
   }
   
-  /* 🌟 헤더 여백 대폭 축소 */
+  /* 헤더 여백 대폭 축소 */
   #library-header {
     text-align: center;
-    margin-bottom: 3rem; /* 기존 4rem에서 축소 */
+    margin-bottom: 3rem;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1.2rem; /* 기존 2.5rem에서 축소 */
+    padding-bottom: 1.2rem;
   }
 
   #library-header .subtitle {
     font-family: 'Gowun Batang', serif;
     font-size: 1.15rem;
     color: var(--accent);
-    margin: 0 0 0.5rem 0; /* 기존 1rem에서 축소하여 타이틀과 밀착 */
+    margin: 0 0 0.5rem 0;
     letter-spacing: 0.05em;
   }
   
@@ -68,13 +68,13 @@
     letter-spacing: -0.02em;
   }
 
-  /* 🌟 재능기부 문구 우측 정렬 및 간격 축소 */
+  /* 재능기부 문구 우측 정렬 및 간격 축소 */
   #library-header .credit {
     font-family: 'Gowun Dodum', sans-serif;
     font-size: 0.85rem;
     color: var(--text-secondary);
-    text-align: right; /* 우측 끝으로 정렬 */
-    margin: 0.5rem 0 0 0; /* 기존 1.5rem에서 축소하여 타이틀 바로 아래에 위치 */
+    text-align: right;
+    margin: 0.5rem 0 0 0;
     letter-spacing: 0.05em;
   }
 
@@ -232,7 +232,6 @@
     <div id="library-header">
       <p class="subtitle">푸르던 날에 심어둔 씨앗, 다시 하나의 숲으로 만나다</p>
       <h1>숲을 위한 씨앗 해낭문학회</h1>
-      <!-- 우측 정렬된 재능기부 텍스트 -->
       <p class="credit">해낭 20회 이재근 재능기부</p>
     </div>
     <div class="bookshelf" id="bookshelf">
@@ -244,9 +243,9 @@
       <button id="back-to-library">◀ 서재</button>
       <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
       
-      <!-- 버튼 순서 유지 -->
+      <!-- 🌟 버튼 이름 '해낭회가'로 변경 -->
       <button id="font-inc" title="글자 크게">가+</button>
-      <button id="bgm-toggle" title="음악 재생/정지">🎵 음악 켜기</button>
+      <button id="bgm-toggle" title="음악 재생/정지">🎵 해낭회가</button>
       <button id="font-dec" title="글자 작게">가−</button>
       <button id="spread-toggle" title="페이지 보기 방식 전환">📖 양면</button>
 
@@ -317,13 +316,13 @@
   bgmToggle.addEventListener('click', function() {
     if (isPlaying) {
       bgm.pause();
-      bgmToggle.textContent = '🎵 음악 켜기';
+      bgmToggle.textContent = '🎵 해낭회가'; // 🌟 끄면 다시 원래 텍스트로
       bgmToggle.classList.remove('active');
     } else {
       bgm.play().catch(function(e) { 
         alert("음악 파일(bgm.mp3) 재생에 실패했습니다. 깃허브 캐시가 아직 갱신되지 않았을 수 있으니 나중에 다시 시도해 주세요."); 
       });
-      bgmToggle.textContent = '🔇 음악 끄기';
+      bgmToggle.textContent = '🔇 해낭회가 끄기'; // 🌟 켜져있을 때 표시되는 텍스트
       bgmToggle.classList.add('active');
     }
     isPlaying = !isPlaying;
