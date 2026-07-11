@@ -47,7 +47,18 @@
     transition: background-color 0.3s, color 0.3s;
   }
 
-  button, select, input { font-family: inherit; outline: none; }
+  /* 리더가 열려 있을 때 뒤쪽 서재 스크롤 잠금 */
+  body.reader-open { overflow: hidden; }
+
+  button, select, input { font-family: inherit; }
+
+  /* 키보드 포커스 표시 (접근성): 마우스 클릭 시엔 안 보이고, 키보드 이동 시에만 표시 */
+  button:focus-visible, select:focus-visible, input:focus-visible,
+  .book-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
 
   /* ---------- 서재 (책장) UI ---------- */
   #library {
@@ -115,6 +126,17 @@
     gap: 4rem 2.5rem;
   }
 
+  /* 검색 결과 없음 안내 */
+  #no-results {
+    text-align: center;
+    color: var(--text-secondary);
+    font-family: 'Gowun Batang', serif;
+    font-size: 1.05rem;
+    padding: 4rem 1rem;
+    line-height: 1.8;
+  }
+  #no-results[hidden] { display: none; }
+
   .book-card {
     cursor: pointer;
     text-align: left;
@@ -123,8 +145,26 @@
 
   .book-card:hover { transform: translateY(-10px); }
 
+  .cover-wrap { position: relative; }
+
+  /* 집 번호 뱃지 */
+  .book-badge {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-family: 'Gowun Dodum', sans-serif;
+    padding: 0.2rem 0.55rem;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    pointer-events: none;
+  }
+
   .book-cover {
     width: 100%; aspect-ratio: 2 / 3; object-fit: cover;
+    display: block;
     border-radius: 2px 7px 7px 2px;
     box-shadow: 
       inset 4px 0 12px rgba(0,0,0,0.08),
@@ -159,12 +199,14 @@
   }
   #reader-shell.visible { transform: translateY(0); }
 
-  /* 🌟 한 줄 툴바 디자인 복구 */
+  /* 한 줄 툴바 + 오른쪽 스크롤 힌트 그라데이션 */
+  .toolbar-wrap { position: relative; z-index: 10; }
+
   header.toolbar {
     display: flex; flex-wrap: nowrap; align-items: center;
     padding: 0.8rem 1.2rem; background: var(--toolbar-bg);
     border-bottom: 1px solid var(--border-color); 
-    gap: 0.8rem; z-index: 10;
+    gap: 0.8rem;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     backdrop-filter: blur(10px);
@@ -174,6 +216,17 @@
   header.toolbar::-webkit-scrollbar { display: none; }
   header.toolbar { -ms-overflow-style: none; scrollbar-width: none; }
   header.toolbar > * { flex-shrink: 0; }
+
+  /* 툴바에 가려진 버튼이 더 있다는 것을 알려주는 페이드 */
+  .toolbar-fade {
+    position: absolute; top: 0; right: 0; bottom: 1px;
+    width: 48px;
+    background: linear-gradient(to right, transparent, var(--bg-color));
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.25s ease;
+  }
+  .toolbar-fade.hidden { opacity: 0; }
 
   .shell-book-title {
     font-family: 'Gowun Batang', serif; font-size: 1.05rem; font-weight: bold;
@@ -263,6 +316,13 @@
   .turn-next-anim { animation: turnNext 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
   .turn-prev-anim { animation: turnPrev 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
+  /* 움직임 최소화 설정 존중 (접근성) */
+  @media (prefers-reduced-motion: reduce) {
+    .turn-next-anim, .turn-prev-anim { animation: none; }
+    .book-card, .book-card:hover { transition: none; transform: none; }
+    #reader-shell { transition: background-color 0.3s; }
+  }
+
   #loading {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem; opacity: .9; font-weight: bold; color: var(--accent); z-index: 5;
@@ -277,7 +337,7 @@
     backdrop-filter: blur(10px); transition: background-color 0.3s, border-color 0.3s;
   }
   
-  #progress-slider { flex: 1; cursor: pointer; accent-color: var(--accent); height: 4px; border-radius: 2px; outline: none; }
+  #progress-slider { flex: 1; cursor: pointer; accent-color: var(--accent); height: 4px; border-radius: 2px; }
   #progress-label { min-width: 4ch; text-align: right; color: var(--text-secondary); font-weight: bold; }
 
 </style>
@@ -301,31 +361,37 @@
     </div>
     <div class="bookshelf" id="bookshelf">
     </div>
+    <div id="no-results" hidden>
+      찾으시는 시집이 없습니다.<br>다른 제목으로 검색해 보세요.
+    </div>
   </div>
 
   <div id="reader-shell">
-    <!-- 🌟 다시 한 줄로 이어진 상단 툴바 -->
-    <header class="toolbar">
-      <button id="back-to-library">◀ 서재</button>
-      <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
-      
-      <!-- 메뉴 순서: 해낭회가, 가+, 가-, 목차, 검색, 달빛모드, 양면, 글씨체 -->
-      <button id="bgm-toggle" title="음악 재생/정지">🎵 해낭회가</button>
-      <button id="font-inc" title="글자 크게">가+</button>
-      <button id="font-dec" title="글자 작게">가−</button>
-      <button id="toc-toggle-btn" title="목차 보기">📑 목차</button>
-      <button id="search-toggle-btn" title="이 시집에서 검색">🔍 검색</button>
-      <button id="theme-toggle" title="달빛 모드">🌙 달빛 모드</button>
-      <button id="spread-toggle" title="페이지 보기 방식 전환">📖 양면</button>
+    <!-- 한 줄 상단 툴바 (오른쪽 페이드로 스크롤 힌트 제공) -->
+    <div class="toolbar-wrap">
+      <header class="toolbar" id="toolbar">
+        <button id="back-to-library">◀ 서재</button>
+        <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
+        
+        <!-- 메뉴 순서: 해낭회가, 가+, 가-, 목차, 검색, 달빛모드, 양면, 글씨체 -->
+        <button id="bgm-toggle" title="음악 재생/정지">🎵 해낭회가</button>
+        <button id="font-inc" title="글자 크게">가+</button>
+        <button id="font-dec" title="글자 작게">가−</button>
+        <button id="toc-toggle-btn" title="목차 보기">📑 목차</button>
+        <button id="search-toggle-btn" title="이 시집에서 검색">🔍 검색</button>
+        <button id="theme-toggle" title="달빛 모드">🌙 달빛 모드</button>
+        <button id="spread-toggle" title="페이지 보기 방식 전환">📖 양면</button>
 
-      <select id="font-family-select" title="글자체 선택">
-        <option value="'Gowun Batang', serif" selected>고운바탕 (시집 추천)</option>
-        <option value="'Noto Sans KR', sans-serif">본고딕 (깔끔함)</option>
-        <option value="'Noto Serif KR', serif">본명조 (단정함)</option>
-        <option value="'Gowun Dodum', sans-serif">고운돋움 (정갈함)</option>
-        <option value="'Nanum Pen Script', cursive">나눔펜 (감성 손글씨)</option>
-      </select>
-    </header>
+        <select id="font-family-select" title="글자체 선택">
+          <option value="'Gowun Batang', serif" selected>고운바탕 (시집 추천)</option>
+          <option value="'Noto Sans KR', sans-serif">본고딕 (깔끔함)</option>
+          <option value="'Noto Serif KR', serif">본명조 (단정함)</option>
+          <option value="'Gowun Dodum', sans-serif">고운돋움 (정갈함)</option>
+          <option value="'Nanum Pen Script', cursive">나눔펜 (감성 손글씨)</option>
+        </select>
+      </header>
+      <div class="toolbar-fade" id="toolbar-fade"></div>
+    </div>
 
     <div id="viewer-wrap">
       <div id="viewer"></div>
@@ -365,7 +431,6 @@
 
 <script>
 (function () {
-  // 🌟 35집, 36집 새 책 추가 반영 완료!
   var bookList = [
     { title: "해낭 제1집: 해바람", author: "해낭문학회", url: "./books/01.epub", cover: "./images/01.jpg" },
     { title: "해낭 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "./books/03.epub", cover: "./images/03.jpg" },
@@ -396,83 +461,182 @@
     { title: "해낭 제43집: 가슴 속의 어둠을 가만히 들어 올리는 달", author: "해낭문학회", url: "./books/43.epub", cover: "./images/43.jpg" }
   ];
 
+  // ---------- localStorage 키 및 헬퍼 (용량 초과/사생활 보호 모드 대비 try-catch) ----------
+  var SETTINGS_KEY = 'haenang-settings';
+  var POS_PREFIX = 'haenang-pos:';   // 책별 마지막 읽던 위치(CFI)
+  var LOC_PREFIX = 'haenang-loc:';   // 책별 locations 캐시 (진행률 슬라이더용)
+
+  function storageGet(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function storageSet(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) { /* 용량 초과 등은 조용히 무시 */ }
+  }
+
+  // ---------- 설정 불러오기 (없으면 시스템 다크모드 설정을 따름) ----------
+  var settings = {
+    darkMode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
+    fontSize: 120,
+    font: "'Gowun Batang', serif",
+    spread: "none"
+  };
+  try {
+    var saved = storageGet(SETTINGS_KEY);
+    if (saved) {
+      var parsed = JSON.parse(saved);
+      if (typeof parsed.darkMode === 'boolean') settings.darkMode = parsed.darkMode;
+      if (typeof parsed.fontSize === 'number') settings.fontSize = parsed.fontSize;
+      if (typeof parsed.font === 'string') settings.font = parsed.font;
+      if (parsed.spread === 'none' || parsed.spread === 'auto') settings.spread = parsed.spread;
+    }
+  } catch (e) { /* 파싱 실패 시 기본값 유지 */ }
+
+  function saveSettings() {
+    storageSet(SETTINGS_KEY, JSON.stringify(settings));
+  }
+
   var book = null, rendition = null;
-  var fontSize = 120; 
-  var currentFont = "'Gowun Batang', serif"; 
-  var currentSpread = "none";
+  var currentBookUrl = null;
+  var fontSize = settings.fontSize;
+  var currentFont = settings.font;
+  var currentSpread = settings.spread;
+  var isDarkMode = settings.darkMode;
   
   var shell = document.getElementById('reader-shell');
   var loadingEl = document.getElementById('loading');
   var bookshelfEl = document.getElementById('bookshelf');
+  var noResultsEl = document.getElementById('no-results');
   var progressSlider = document.getElementById('progress-slider');
   var viewerEl = document.getElementById('viewer');
-
-  // 달빛 모드 상태 및 로직
-  var isDarkMode = false;
   var themeToggleBtn = document.getElementById('theme-toggle');
+  var spreadToggleBtn = document.getElementById('spread-toggle');
+  var fontFamilySelect = document.getElementById('font-family-select');
 
-  themeToggleBtn.addEventListener('click', function() {
-    isDarkMode = !isDarkMode;
+  // ---------- 달빛 모드 ----------
+  function applyTheme() {
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
     themeToggleBtn.innerHTML = isDarkMode ? '☀️ 햇빛 모드' : '🌙 달빛 모드';
-    
     if (rendition) {
       rendition.themes.select(isDarkMode ? "dark" : "light");
     }
+  }
+  applyTheme(); // 저장된 설정(또는 시스템 설정) 즉시 반영
+
+  themeToggleBtn.addEventListener('click', function() {
+    isDarkMode = !isDarkMode;
+    settings.darkMode = isDarkMode;
+    saveSettings();
+    applyTheme();
   });
 
-  // BGM 로직
+  // ---------- 저장된 양면/글씨체 설정을 UI에 반영 ----------
+  spreadToggleBtn.textContent = (currentSpread === "auto") ? "📄 단면" : "📖 양면";
+  fontFamilySelect.value = currentFont;
+
+  // ---------- BGM ----------
   var bgm = document.getElementById('bgm');
   var bgmToggle = document.getElementById('bgm-toggle');
   var isPlaying = false;
 
+  function setBgmUI(playing) {
+    isPlaying = playing;
+    bgmToggle.textContent = playing ? '🔇 해낭회가 끄기' : '🎵 해낭회가';
+    bgmToggle.classList.toggle('active', playing);
+  }
+
   bgmToggle.addEventListener('click', function() {
     if (isPlaying) {
       bgm.pause();
-      bgmToggle.textContent = '🎵 해낭회가';
-      bgmToggle.classList.remove('active');
+      setBgmUI(false);
     } else {
-      bgm.play().catch(function(e) { 
-        alert("음악 파일(bgm.mp3) 재생에 실패했습니다. 깃허브 캐시가 아직 갱신되지 않았을 수 있으니 나중에 다시 시도해 주세요."); 
+      // 재생이 실제로 성공한 경우에만 상태를 바꿔서, 실패 시 버튼이 꼬이지 않도록 함
+      bgm.play().then(function() {
+        setBgmUI(true);
+      }).catch(function(e) {
+        alert("음악 파일(bgm.mp3) 재생에 실패했습니다. 깃허브 캐시가 아직 갱신되지 않았을 수 있으니 나중에 다시 시도해 주세요.");
+        setBgmUI(false);
       });
-      bgmToggle.textContent = '🔇 해낭회가 끄기';
-      bgmToggle.classList.add('active');
     }
-    isPlaying = !isPlaying;
   });
 
-  // 서재 렌더링
+  // ---------- 표지 대체 이미지 (외부 서비스 의존 없이 인라인 SVG) ----------
+  var FALLBACK_COVER = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450">' +
+    '<rect width="300" height="450" fill="#EDE9E2"/>' +
+    '<rect x="14" y="14" width="272" height="422" fill="none" stroke="#C9C2B6" stroke-width="1.5"/>' +
+    '<text x="150" y="215" text-anchor="middle" font-family="serif" font-size="20" fill="#8B8680">표지</text>' +
+    '<text x="150" y="245" text-anchor="middle" font-family="serif" font-size="20" fill="#8B8680">준비 중</text>' +
+    '</svg>'
+  );
+
+  // ---------- 서재 렌더링 ----------
   function renderBooks() {
     bookshelfEl.innerHTML = '';
     bookList.forEach(function(item) {
       var card = document.createElement('div');
       card.className = 'book-card';
-      card.innerHTML = `
-        <img src="${item.cover}" alt="${item.title} 표지" class="book-cover" onerror="this.src='https://via.placeholder.com/150x225?text=No+Cover'">
-        <p class="book-title">${item.title}</p>
-        <p class="book-author">${item.author}</p>
-      `;
-      card.addEventListener('click', function() {
-        openBook(item.url, item.title);
+      card.setAttribute('tabindex', '0');          // 키보드로 접근 가능
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', item.title + ' 읽기');
+
+      // 제목에서 집 번호 추출 → 뱃지 표시
+      var badgeMatch = item.title.match(/제(\d+)집/);
+      var badgeHtml = badgeMatch ? '<span class="book-badge">제' + badgeMatch[1] + '집</span>' : '';
+
+      var coverWrap = document.createElement('div');
+      coverWrap.className = 'cover-wrap';
+      coverWrap.innerHTML = badgeHtml;
+
+      var img = document.createElement('img');
+      img.className = 'book-cover';
+      img.alt = item.title + ' 표지';
+      img.loading = 'lazy'; // 27권 표지 지연 로딩으로 초기 로딩 개선
+      img.src = item.cover;
+      img.onerror = function() {
+        this.onerror = null; // 대체 이미지마저 실패해도 무한 루프 방지
+        this.src = FALLBACK_COVER;
+      };
+      coverWrap.insertBefore(img, coverWrap.firstChild);
+
+      var titleP = document.createElement('p');
+      titleP.className = 'book-title';
+      titleP.textContent = item.title;
+
+      var authorP = document.createElement('p');
+      authorP.className = 'book-author';
+      authorP.textContent = item.author;
+
+      card.appendChild(coverWrap);
+      card.appendChild(titleP);
+      card.appendChild(authorP);
+
+      function open() { openBook(item.url, item.title); }
+      card.addEventListener('click', open);
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          open();
+        }
       });
       bookshelfEl.appendChild(card);
     });
   }
   renderBooks(); 
 
-  // 메인 통합 검색창
+  // ---------- 메인 통합 검색창 ----------
   var globalSearchInput = document.getElementById('global-search-input');
   globalSearchInput.addEventListener('input', function(e) {
     var query = e.target.value.toLowerCase();
     var cards = bookshelfEl.querySelectorAll('.book-card');
+    var visibleCount = 0;
     cards.forEach(function(card) {
       var title = card.querySelector('.book-title').textContent.toLowerCase();
-      if (title.includes(query)) {
-        card.style.display = 'block';
-      } else {
-        card.style.display = 'none';
-      }
+      var show = title.includes(query);
+      card.style.display = show ? 'block' : 'none';
+      if (show) visibleCount++;
     });
+    // 검색 결과가 없으면 안내 문구 표시
+    noResultsEl.hidden = visibleCount > 0;
   });
 
   function animatePageTurn(direction) {
@@ -488,9 +652,22 @@
   function goPrev() { if(rendition) { rendition.prev(); animatePageTurn('prev'); } }
   function goNext() { if(rendition) { rendition.next(); animatePageTurn('next'); } }
 
+  // ---------- 툴바 스크롤 힌트 페이드 ----------
+  var toolbarEl = document.getElementById('toolbar');
+  var toolbarFade = document.getElementById('toolbar-fade');
+  function updateToolbarFade() {
+    var canScroll = toolbarEl.scrollWidth > toolbarEl.clientWidth + 2;
+    var atEnd = toolbarEl.scrollLeft + toolbarEl.clientWidth >= toolbarEl.scrollWidth - 4;
+    toolbarFade.classList.toggle('hidden', !canScroll || atEnd);
+  }
+  toolbarEl.addEventListener('scroll', updateToolbarFade, { passive: true });
+  window.addEventListener('resize', updateToolbarFade);
+
+  // ---------- 책 열기 ----------
   function openBook(url, titleStr) {
     if(book) { book.destroy(); }
     viewerEl.innerHTML = '';
+    currentBookUrl = url;
     progressSlider.value = 0;
     progressSlider.disabled = true; 
     document.getElementById('progress-label').textContent = '0%';
@@ -505,6 +682,8 @@
     
     loadingEl.hidden = false;
     shell.classList.add('visible');
+    document.body.classList.add('reader-open'); // 뒤쪽 서재 스크롤 잠금
+    updateToolbarFade();
 
     book = ePub(url);
     
@@ -515,8 +694,10 @@
     });
     
     // 테마 등록 및 적용 (달빛/햇빛)
-    rendition.themes.register("light", { "body": { "background": "#FBF9F6", "color": "#2C2A28" } });
-    rendition.themes.register("dark", { "body": { "background": "#1E1E1E", "color": "#EAEAEA" } });
+    // 주의: body 단위 색상만 지정하므로, EPUB 내부 CSS에 개별 요소 색이 하드코딩된 경우
+    // 달빛 모드가 그 요소엔 적용되지 않을 수 있음
+    rendition.themes.register("light", { "body": { "background": "#FBF9F6 !important", "color": "#2C2A28 !important" } });
+    rendition.themes.register("dark", { "body": { "background": "#1E1E1E !important", "color": "#EAEAEA !important" } });
     rendition.themes.select(isDarkMode ? "dark" : "light");
     
     rendition.hooks.content.register(function(contents) {
@@ -559,26 +740,55 @@
           tocList.appendChild(li);
         });
       });
-      return book.locations.generate(1600);
-    }).then(function(locations) {
+
+      // locations 캐시: 이미 계산해 둔 책은 즉시 복원, 처음이면 계산 후 저장
+      var cachedLoc = storageGet(LOC_PREFIX + url);
+      if (cachedLoc) {
+        book.locations.load(cachedLoc);
+        return Promise.resolve();
+      }
+      return book.locations.generate(1600).then(function() {
+        storageSet(LOC_PREFIX + url, book.locations.save());
+      });
+    }).then(function() {
       progressSlider.disabled = false;
+      // locations가 준비된 뒤 현재 위치 퍼센트를 한 번 갱신
+      if (rendition && rendition.currentLocation) {
+        var loc = rendition.currentLocation();
+        if (loc && loc.start && typeof loc.start.percentage === 'number') {
+          var pct = Math.round(loc.start.percentage * 100);
+          progressSlider.value = pct;
+          document.getElementById('progress-label').textContent = pct + "%";
+        }
+      }
     });
 
-    rendition.display().then(function () {
+    // 마지막 읽던 위치가 있으면 그 위치에서 이어서 펼치기
+    var savedCfi = storageGet(POS_PREFIX + url);
+    rendition.display(savedCfi || undefined).then(function () {
       loadingEl.hidden = true;
     }).catch(function(err) {
-      alert("책을 불러오는데 실패했습니다.");
-      loadingEl.hidden = true;
+      // 저장된 위치가 손상된 경우 처음부터 다시 시도
+      if (savedCfi) {
+        rendition.display().then(function() { loadingEl.hidden = true; });
+      } else {
+        alert("책을 불러오는데 실패했습니다.");
+        loadingEl.hidden = true;
+      }
     });
 
     rendition.on("relocated", function (location) {
       var pct = Math.round(((location.start && location.start.percentage) || 0) * 100);
       progressSlider.value = pct;
       document.getElementById('progress-label').textContent = pct + "%";
+      // 읽던 위치 저장 (책별)
+      if (location.start && location.start.cfi && currentBookUrl) {
+        storageSet(POS_PREFIX + currentBookUrl, location.start.cfi);
+      }
     });
   }
 
-  // 목차 패널 로직
+  // ---------- 목차 패널 ----------
   var tocPanel = document.getElementById('toc-panel');
   var tocToggleBtn = document.getElementById('toc-toggle-btn');
   var tocCloseBtn = document.getElementById('toc-close-btn');
@@ -591,7 +801,7 @@
     tocPanel.classList.remove('visible');
   });
 
-  // 책 내부 검색 패널 로직
+  // ---------- 책 내부 검색 패널 ----------
   var searchPanel = document.getElementById('search-panel');
   var searchToggleBtn = document.getElementById('search-toggle-btn');
   var searchInputInBook = document.getElementById('inbook-search-input');
@@ -657,16 +867,19 @@
 
   document.getElementById('back-to-library').addEventListener('click', function () {
     shell.classList.remove('visible');
+    document.body.classList.remove('reader-open');
     searchPanel.classList.remove('visible'); 
     tocPanel.classList.remove('visible');
   });
 
-  document.getElementById('font-family-select').addEventListener('change', function(e) {
+  fontFamilySelect.addEventListener('change', function(e) {
     currentFont = e.target.value;
+    settings.font = currentFont;
+    saveSettings();
     if(rendition) rendition.themes.font(currentFont);
   });
 
-  document.getElementById('spread-toggle').addEventListener('click', function() {
+  spreadToggleBtn.addEventListener('click', function() {
     if (currentSpread === "none") {
       currentSpread = "auto";
       this.textContent = "📄 단면";
@@ -674,6 +887,8 @@
       currentSpread = "none";
       this.textContent = "📖 양면";
     }
+    settings.spread = currentSpread;
+    saveSettings();
     if(rendition) rendition.spread(currentSpread);
   });
 
@@ -682,20 +897,27 @@
 
   document.addEventListener('keydown', function (e) {
     if (!shell.classList.contains('visible')) return;
+    // 검색창 등 입력 요소에 포커스가 있을 땐 화살표로 페이지가 넘어가지 않도록 함
+    var tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
     if (e.key === "ArrowLeft") goPrev();
     if (e.key === "ArrowRight") goNext();
   });
 
   document.getElementById('font-inc').addEventListener('click', function () {
     fontSize = Math.min(180, fontSize + 10);
+    settings.fontSize = fontSize;
+    saveSettings();
     if(rendition) rendition.themes.fontSize(fontSize + "%");
   });
   document.getElementById('font-dec').addEventListener('click', function () {
     fontSize = Math.max(70, fontSize - 10);
+    settings.fontSize = fontSize;
+    saveSettings();
     if(rendition) rendition.themes.fontSize(fontSize + "%");
   });
 
-  // 투명 터치 패널 이벤트 (모바일 및 PC)
+  // ---------- 투명 터치 패널 이벤트 (모바일 및 PC) ----------
   var overlays = document.querySelectorAll('.touch-overlay');
   overlays.forEach(function(panel) {
     var startX = 0, startY = 0, startTime = 0;
