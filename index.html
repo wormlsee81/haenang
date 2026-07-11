@@ -159,43 +159,35 @@
   }
   #reader-shell.visible { transform: translateY(0); }
 
-  /* 🌟 메뉴 2줄 분리를 위한 툴바 컨테이너 구조 변경 */
-  #reader-header {
-    display: flex; flex-direction: column;
-    background: var(--toolbar-bg);
+  /* 🌟 한 줄 툴바 디자인 복구 */
+  header.toolbar {
+    display: flex; flex-wrap: nowrap; align-items: center;
+    padding: 0.8rem 1.2rem; background: var(--toolbar-bg);
     border-bottom: 1px solid var(--border-color); 
-    z-index: 10;
+    gap: 0.8rem; z-index: 10;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     backdrop-filter: blur(10px);
     transition: background-color 0.3s, border-color 0.3s;
   }
   
-  .toolbar-row {
-    display: flex; flex-wrap: nowrap; align-items: center;
-    padding: 0.5rem 1.2rem;
-    gap: 0.8rem;
-    overflow-x: auto; -webkit-overflow-scrolling: touch;
-    -ms-overflow-style: none; scrollbar-width: none;
-  }
-  .toolbar-row::-webkit-scrollbar { display: none; }
-  .toolbar-row > * { flex-shrink: 0; }
-
-  .top-row { padding-bottom: 0.2rem; }
-  .bottom-row { padding-top: 0.2rem; padding-bottom: 0.8rem; }
+  header.toolbar::-webkit-scrollbar { display: none; }
+  header.toolbar { -ms-overflow-style: none; scrollbar-width: none; }
+  header.toolbar > * { flex-shrink: 0; }
 
   .shell-book-title {
     font-family: 'Gowun Batang', serif; font-size: 1.05rem; font-weight: bold;
-    color: var(--text-primary); margin: 0 0.5rem;
+    color: var(--text-primary); margin: 0 0.5rem; text-align: center;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* 긴 제목은 ...으로 처리되도록 최적화 */
   }
   
-  #reader-header button, #reader-header select, footer.statusbar button {
+  .toolbar button, .toolbar select, footer.statusbar button {
     background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary);
     border-radius: 25px; padding: 0.45rem 1rem; font-size: 0.85rem; cursor: pointer;
     transition: all 0.25s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
   }
   
-  #reader-header button:hover, #reader-header select:hover, footer.statusbar button:hover {
+  .toolbar button:hover, .toolbar select:hover, footer.statusbar button:hover {
     border-color: var(--accent); color: var(--accent);
   }
   
@@ -208,13 +200,8 @@
     #library { padding: 3rem 1.2rem; }
     #library-header h1 { font-size: 1.8rem; }
     .subtitle { font-size: 1rem !important; }
-    
-    /* 🌟 모바일에서도 2줄 메뉴가 예쁘게 보이도록 여백 최적화 */
-    .toolbar-row { padding: 0.5rem 0.8rem; gap: 0.5rem; }
-    .top-row { padding-bottom: 0.2rem; }
-    .bottom-row { padding-top: 0.2rem; padding-bottom: 0.5rem; }
-    #reader-header button, #reader-header select { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-    
+    header.toolbar { padding: 0.5rem 0.8rem; gap: 0.5rem; }
+    .toolbar button, .toolbar select { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
     .shell-book-title { font-size: 0.95rem; margin: 0 0.2rem; }
     footer.statusbar { padding: 0.6rem 0.8rem; gap: 0.5rem; }
     footer.statusbar button { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
@@ -260,7 +247,7 @@
   }
 
   @media (max-width: 650px) {
-    .side-panel { width: 100%; }
+    .side-panel { width: 100%; } /* 모바일에서는 패널이 꽉 차게 */
   }
 
   /* 투명 터치/스와이프 패널 */
@@ -317,32 +304,27 @@
   </div>
 
   <div id="reader-shell">
-    <!-- 🌟 2줄로 분리된 상단 툴바 -->
-    <header id="reader-header">
-      <!-- 윗줄: 뒤로가기 버튼과 책 제목 -->
-      <div class="toolbar-row top-row">
-        <button id="back-to-library">◀ 서재</button>
-        <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
-      </div>
+    <!-- 🌟 다시 한 줄로 이어진 상단 툴바 -->
+    <header class="toolbar">
+      <button id="back-to-library">◀ 서재</button>
+      <span class="shell-book-title" id="shell-title">책을 불러오는 중...</span>
       
-      <!-- 아랫줄: 사용자가 요청하신 정확한 버튼 순서 -->
-      <div class="toolbar-row bottom-row">
-        <button id="bgm-toggle" title="음악 재생/정지">🎵 해낭회가</button>
-        <button id="font-inc" title="글자 크게">가+</button>
-        <button id="font-dec" title="글자 작게">가−</button>
-        <button id="toc-toggle-btn" title="목차 보기">📑 목차</button>
-        <button id="search-toggle-btn" title="이 시집에서 검색">🔍 검색</button>
-        <button id="theme-toggle" title="달빛 모드">🌙 달빛 모드</button>
-        <button id="spread-toggle" title="페이지 보기 방식 전환">📖 양면</button>
+      <!-- 메뉴 순서: 해낭회가, 가+, 가-, 목차, 검색, 달빛모드, 양면, 글씨체 -->
+      <button id="bgm-toggle" title="음악 재생/정지">🎵 해낭회가</button>
+      <button id="font-inc" title="글자 크게">가+</button>
+      <button id="font-dec" title="글자 작게">가−</button>
+      <button id="toc-toggle-btn" title="목차 보기">📑 목차</button>
+      <button id="search-toggle-btn" title="이 시집에서 검색">🔍 검색</button>
+      <button id="theme-toggle" title="달빛 모드">🌙 달빛 모드</button>
+      <button id="spread-toggle" title="페이지 보기 방식 전환">📖 양면</button>
 
-        <select id="font-family-select" title="글자체 선택">
-          <option value="'Gowun Batang', serif" selected>고운바탕 (시집 추천)</option>
-          <option value="'Noto Sans KR', sans-serif">본고딕 (깔끔함)</option>
-          <option value="'Noto Serif KR', serif">본명조 (단정함)</option>
-          <option value="'Gowun Dodum', sans-serif">고운돋움 (정갈함)</option>
-          <option value="'Nanum Pen Script', cursive">나눔펜 (감성 손글씨)</option>
-        </select>
-      </div>
+      <select id="font-family-select" title="글자체 선택">
+        <option value="'Gowun Batang', serif" selected>고운바탕 (시집 추천)</option>
+        <option value="'Noto Sans KR', sans-serif">본고딕 (깔끔함)</option>
+        <option value="'Noto Serif KR', serif">본명조 (단정함)</option>
+        <option value="'Gowun Dodum', sans-serif">고운돋움 (정갈함)</option>
+        <option value="'Nanum Pen Script', cursive">나눔펜 (감성 손글씨)</option>
+      </select>
     </header>
 
     <div id="viewer-wrap">
@@ -383,6 +365,7 @@
 
 <script>
 (function () {
+  // 🌟 35집, 36집 새 책 추가 반영 완료!
   var bookList = [
     { title: "해낭 제1집: 해바람", author: "해낭문학회", url: "./books/01.epub", cover: "./images/01.jpg" },
     { title: "해낭 제3집: 분노는 그리 초조하지 않게", author: "해낭문학회", url: "./books/03.epub", cover: "./images/03.jpg" },
@@ -403,6 +386,8 @@
     { title: "해낭 제32집: 내림표 가득한 세상에서", author: "해낭문학회", url: "./books/32.epub", cover: "./images/32.jpg" },
     { title: "해낭 제33집: 생의 언저리를 할퀴고 간 봄", author: "해낭문학회", url: "./books/33.epub", cover: "./images/33.jpg" },
     { title: "해낭 제34집: 온 천지에 떨어져 제 이름 버리고", author: "해낭문학회", url: "./books/34.epub", cover: "./images/34.jpg" },
+    { title: "해낭 제35집: 너무 오래 생각하면 덜 가슴 아픈", author: "해낭문학회", url: "./books/35.epub", cover: "./images/35.jpg" },
+    { title: "해낭 제36집: 그리움의 출구로 나가라", author: "해낭문학회", url: "./books/36.epub", cover: "./images/36.jpg" },
     { title: "해낭 제37집: 삶의 무늬를 그리고, 지우고, 다시", author: "해낭문학회", url: "./books/37.epub", cover: "./images/37.jpg" },
     { title: "해낭 제38집: 덜된 잠을 깨우는 달콤함", author: "해낭문학회", url: "./books/38.epub", cover: "./images/38.jpg" },
     { title: "해낭 제39집: 불을 밝히기 전의 어스름", author: "해낭문학회", url: "./books/39.epub", cover: "./images/39.jpg" },
